@@ -3,8 +3,6 @@ tap "atombender/ktail"
 #tap "chef/chef"
 tap "derailed/k9s"
 tap "homebrew/bundle"
-tap "homebrew/cask"
-tap "homebrew/core"
 tap "homebrew/services"
 tap "int128/kubelogin"
 # https://www.hashicorp.com/blog/announcing-hashicorp-homebrew-tap
@@ -15,6 +13,8 @@ tap "int128/kubelogin"
 tap "derailed/k9s"
 tap "chef/chef"
 tap "benwebber/tunnelblickctl"
+# For dockle
+tap "goodwithtech/r"
 
 # Binaries
 brew "ansible"
@@ -51,7 +51,7 @@ brew "curl"
 #brew "dnsmasq", restart_service: true
 # https://github.com/goodwithtech/dockle
 # Contianer Image Linter
-brew "goodwithtech/r/dockle"
+brew "dockle"
 # Golang linter
 brew "golangci-lint"
 brew "docker-compose"
@@ -92,11 +92,7 @@ brew "kubespy"
 brew "libheif"
 brew "maven"
 brew "make"
-# An opensource Redis Client GUI
-brew "medis"
 brew "minikube"
-# Like Charlesproxy but opensource https://mitmproxy.org
-brew "mitmproxy"
 # A super power paging program https://www.jedsoft.org/most/
 brew "most"
 brew "mplayer"
@@ -108,12 +104,13 @@ brew "nvm"
 # https://github.com/vmware-tanzu/octant
 # Shows how applications run on k8s
 brew "octant"
-brew "owasp-zap"
 brew "pandoc"
 brew "packer"
 brew "pdf2svg"
 brew "python@3.11"
 brew "pyenv-virtualenv"
+# Remove PDF Passowrd
+brew "qpdf"
 brew "rename"
 brew "rust"
 # https://github.com/mozilla/sops manages secrets for helmfile
@@ -181,6 +178,11 @@ cask "keybase"
 cask "lens"
 # Animated Screen Capture
 cask "licecap"
+cask "microsoft-teams"
+# Like Charlesproxy but opensource https://mitmproxy.org
+cask "mitmproxy"
+# An opensource Redis Client GUI
+cask "medis"
 # Graphical Diff
 cask "meld"
 # Autodesk meshmixer used to separate polygons for multicolor MMU prints
@@ -191,6 +193,8 @@ cask "namechanger"
 #cask "mullvadvpn"
 # Opensource Broadcast Software
 cask "obs"
+# The best Second Brain tool out there
+cask "obsidian"
 # https://github.com/puppetlabs/pdk
 # Puppet Client Tools
 #cask "pe-client-tools"
@@ -208,13 +212,13 @@ cask "postico"
 cask "powershell"
 # SMS across devices
 cask "pulse-sms"
-# Remove PDF Passowrd
-cask "qpdf"
 # Replaced spectacle
 cask "rectangle"
-cask react-proto
+# Quickly prototype react apps
+cask "react-proto"
 # Secure Chat
 cask "signal"
+cask "slack"
 cask "spotify"
 cask "the-unarchiver"
 cask "thunderbird"
@@ -231,6 +235,8 @@ cask "vlc"
 # This includes the GUI
 cask "wireshark"
 cask "xscreensaver"
+# OWASP Web App Scanner - Zed Attack Proxy
+cask "zap"
 
 # Need to write a commercial/closed source/optional Brewfile?
 # Great Design tool
