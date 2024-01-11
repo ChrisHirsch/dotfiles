@@ -163,6 +163,9 @@ install_linux_packages(){
 }
 
 install_packages() {
+    source <(kubectl completion bash) # setup autocomplete in bash into the current shell, bash-completion package should be installed first.
+  echo "source <(kubectl completion bash)" >> ~/.bashrc # add autocomplete permanently to your bash shell.
+
   if [ ${machine} == 'Mac' ] ; then
     install_mac_packages
   elif [ ${machine} == 'Linux' ] ; then
@@ -170,13 +173,6 @@ install_packages() {
     install_mac_packages
   fi
 
-  if [ ! -f ~/.vim/autoload/plug.vim ] ; then
-    logger "Installing Vim plugin manager..."
-    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
-        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
-  fi
-  source <(kubectl completion bash) # setup autocomplete in bash into the current shell, bash-completion package should be installed first.
-  echo "source <(kubectl completion bash)" >> ~/.bashrc # add autocomplete permanently to your bash shell.
 }
 
 install_linux_dekstop_packages() {
@@ -250,6 +246,22 @@ elixirinstall() {
   #asdf list
 }
 
+editors() {
+  mkdir -p ~/.vim/autoload
+  if [ ! -f ~/.vim/autoload/plug.vim ] ; then
+    logger "Installing Vim plugin manager..."
+    curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+        https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+  fi
+
+  if [ ${machine} == 'Mac' ] ; then
+    # Allow Key repeat for Visual Studio Code on a mac (for vim plugin)
+    defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
+    # VSCodium
+    # defaults write com.visualstudio.code.oss ApplePressAndHoldEnabled -bool false
+  fi
+}
+
 
 set_os_vars
 create_symlinks
@@ -260,5 +272,6 @@ ssh
 kubernetes
 tmux
 gitinstall
-elixirinstall
+editors
+#elixirinstall
 #Need to use https://github.com/deadc0de6/dotdrop
