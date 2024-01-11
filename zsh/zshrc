@@ -89,23 +89,28 @@ COMPLETION_WAITING_DOTS="true"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
+  #1password
   ansible
-  asdf
+  autopep8
   aws 
   brew
   common-aliases 
   colorize
   docker 
+  docker-compose
   fzf 
   gcloud 
   git 
   gitfast 
   git-extras 
+  golang
+  helm
   history 
   iterm2
   jira
   oc 
   macos
+  pep8
   pip
   python
   kubectl 
@@ -171,9 +176,8 @@ export GOPATH="$HOME/src/go/"
 #fi
 
 # As of CY2023, for any modern Go installation, do not set/export GOROOT.
-export GOROOT=/usr/local/go
-#export GOPRIVATE=github.csnzoo.com
-export PATH=$PATH:/usr/local/go/bin
+#export GOROOT=/usr/local/go
+#export PATH=$PATH:/usr/local/go/bin
 
 # For NVM NodeJS Version Manager
 export NVM_DIR="$HOME/.nvm"

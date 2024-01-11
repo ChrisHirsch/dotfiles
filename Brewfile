@@ -49,9 +49,13 @@ brew "coreutils"
 brew "curl"
 #brew "elixir"
 #brew "dnsmasq", restart_service: true
+# A tool for exploring a docker image, layer contents, and discovering ways to shrink the size of your Docker/OCI image.
+# https://github.com/wagoodman/dive
+brew "dive"
 # https://github.com/goodwithtech/dockle
 # Contianer Image Linter
 brew "dockle"
+brew "go"
 # Golang linter
 brew "golangci-lint"
 brew "docker-compose"
@@ -143,6 +147,8 @@ brew "zsh-completions"
 brew "zsh-syntax-highlighting"
 
 # Apps
+cask "1password"
+cask "1password-cli"
 # Removes everything on uninstall of an app
 cask "apptrap"
 # Great USB Imager
