@@ -17,6 +17,10 @@ tap "benwebber/tunnelblickctl"
 tap "goodwithtech/r"
 
 # Binaries
+# A Github Action validator
+brew "action-validator"
+# A Github Action linter
+brew "actionlint"
 brew "ansible"
 brew "ansible-lint"
 brew "asciiquarium"
@@ -33,6 +37,7 @@ brew "bash"
 brew "bash-completion@2"
 # Best cat/more/less formatter
 brew "bat"
+brew "cmake"
 # Cloud Formation Linter
 brew "cfn-lint"
 # CloudFlare SSL (ie openssl cli replacement)
