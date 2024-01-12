@@ -252,7 +252,21 @@ editors() {
     logger "Installing Vim plugin manager..."
     curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
+
+    logger "Installing all vim plugins..."
+    vim -c "PlugInstall"
+  
+    if [ -f ~/.vim/plugged/YouCompleteMe ] ; then
+      logger "You Complete Me..."
+      cd ~/.vim/plugged/YouCompleteMe
+      py install.py --all
+    else
+      logger "Error! YouCompleteMe doesn't exist, but it should now that Plugins are installed. Try going into vim and running :PlugInstall"
+      exit 1
+    fi
+
   fi
+
 
   if [ ${machine} == 'Mac' ] ; then
     # Allow Key repeat for Visual Studio Code on a mac (for vim plugin)
