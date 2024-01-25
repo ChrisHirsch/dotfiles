@@ -17,6 +17,8 @@ tap "benwebber/tunnelblickctl"
 tap "goodwithtech/r"
 
 # Binaries
+# A GitHub Action Runner for local development
+brew "act"
 # A Github Action validator
 brew "action-validator"
 # A Github Action linter
@@ -63,7 +65,9 @@ brew "dockle"
 brew "go"
 # Golang linter
 brew "golangci-lint"
+brew "gopls"
 brew "docker-compose"
+brew "docker-credential-helper"
 # Practice your coding via exercism.io
 brew "exercism"
 brew "findutils"
@@ -97,6 +101,7 @@ brew "kubectx"
 brew "kubelogin"
 # See K8S resources in realtime 
 brew "kubespy"
+brew "kustomize"
 # For heif-convert cli tool
 brew "libheif"
 brew "maven"
@@ -167,7 +172,9 @@ cask "cyberduck"
 # Database GUI
 cask "dbeaver-community"
 cask "discord"
-cask "docker"
+# Not sure we really want this any more given that Docker wants a license for your desktop use
+# Try Rancher Desktop for an alternative
+# cask "docker"
 cask "evernote"
 cask "firefox"
 # Best screen color changer (for day/night)
@@ -223,6 +230,8 @@ cask "postico"
 cask "powershell"
 # SMS across devices
 cask "pulse-sms"
+# Rancher Desktop rancherdesktop.io is an alternative to Docker Desktop (and free)
+cask "rancher"
 # Replaced spectacle
 cask "rectangle"
 # Quickly prototype react apps
