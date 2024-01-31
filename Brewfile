@@ -88,11 +88,13 @@ brew "htop"
 # JSON diff
 brew "jd"
 brew "jq"
-# Interactive json cli too https://pauljuliusmartinez.github.io/?ref=console.dev
-brew "jless"
-brew "jsonlint"
 # Artifactory CLI
 brew "jfrog-cli"
+# Interactive json cli too https://pauljuliusmartinez.github.io/?ref=console.dev
+brew "jless"
+# JSON Web Tokens CLI Decoder/Encoder
+brew "mike-engel/jwt-cli/jwt-cli"
+brew "jsonlint"
 # https://github.com/atombender/ktail
 brew "ktail" 
 brew "k9s" 
