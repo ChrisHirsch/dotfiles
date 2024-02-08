@@ -84,3 +84,15 @@ alias cerebro='docker run -p 9000:9000 lmenezes/cerebro'
 #}
 alias mytest="echo Make it say: $1"
 
+# Alias to switch Java Versions
+# https://medium.com/w-logs/installing-java-11-on-macos-with-homebrew-7f73c1e9fadf
+# Make sure to brew tap homebrew/cask-versions && brew install java11
+# OR brew  install homebrew/cask-versions/corretto11
+# MAY also have to   sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk to bootstrap
+#export JAVA_8_HOME=$(/usr/libexec/java_home -v1.8)
+export JAVA_11_HOME=$(/usr/libexec/java_home -v11)
+#alias java8='export JAVA_HOME=$JAVA_8_HOME'
+alias java11='export JAVA_HOME=$JAVA_11_HOME'
+# default to Java 11 Corsetto
+java11
+
