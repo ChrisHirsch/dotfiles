@@ -237,6 +237,7 @@ cask "postico"
 cask "powershell"
 # SMS across devices
 cask "pulse-sms"
+cask "qemu"
 # Rancher Desktop rancherdesktop.io is an alternative to Docker Desktop (and free)
 cask "rancher"
 # Replaced spectacle
