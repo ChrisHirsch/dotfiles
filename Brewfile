@@ -3,6 +3,8 @@ tap "atombender/ktail"
 #tap "chef/chef"
 tap "derailed/k9s"
 tap "homebrew/bundle"
+# For installing multiple java versions https://medium.com/w-logs/installing-java-11-on-macos-with-homebrew-7f73c1e9fadf
+tap "homebrew/cask-versions"
 tap "homebrew/services"
 tap "int128/kubelogin"
 # https://www.hashicorp.com/blog/announcing-hashicorp-homebrew-tap
@@ -53,6 +55,9 @@ brew "consul"
 brew "consul-template"
 # For things like realpath
 brew "coreutils"
+# Amazon Java JDK https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/what-is-corretto-11.html
+#brew "homebrew/cask-versions/corretto11"
+/usr/libexec/java_home --verbose
 brew "curl"
 #brew "elixir"
 #brew "dnsmasq", restart_service: true
