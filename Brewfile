@@ -141,6 +141,8 @@ brew "termshark"
 brew "tfenv"
 brew "the_silver_searcher"
 brew "tmux"
+# https://github.com/kubeshop/tracetest?tab=readme-ov-file
+brew "kubeshop/tracetest/tracetest"
 brew "tree"
 # License not opensource?
 #brew "unrar"
