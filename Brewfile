@@ -141,6 +141,8 @@ brew "pyenv-virtualenv"
 brew "qemu"
 # Remove PDF Passowrd
 brew "qpdf"
+# CLI tool for working with CloudFormation https://github.com/aws-cloudformation/rain
+brew "rain"
 brew "rename"
 brew "rust"
 # https://github.com/mozilla/sops manages secrets for helmfile
