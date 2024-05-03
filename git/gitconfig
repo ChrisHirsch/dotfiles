@@ -64,7 +64,6 @@
 
 [credential]
 	helper = cache --timeout 2592000
-	helper = 
 	helper = /usr/local/share/gcm-core/git-credential-manager
 
 [push]
