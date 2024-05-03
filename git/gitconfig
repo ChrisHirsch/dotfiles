@@ -64,6 +64,8 @@
 
 [credential]
 	helper = cache --timeout 2592000
+	helper = 
+	helper = /usr/local/share/gcm-core/git-credential-manager
 
 [push]
 	# When pushing code, always push only your current branch to a branch of the same name

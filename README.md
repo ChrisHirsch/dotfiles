@@ -68,6 +68,17 @@ and validate its working again by opening a new iTerm with no errors.
 
 ## Setting up Visual Studio Code
 
+### Repeating Keys on OSX
+
+To get repeating keys for vi mode:
+```bash
+defaults write -g ApplePressAndHoldEnabled 0
+```
+
+### Enabling Sync
+
+#### Settings Sync Plugin is now DEPRECATED
+
 Add the Settings Sync plugin by Shan Khan and then login to Git. Select the Gist and then do Shift+Option+D (or Shift+Alt+D) to download and sync
 
 Ensure that 
@@ -76,3 +87,33 @@ Select Command "Sync : Advanced Options > Toggle Auto-Upload on Settings Change"
 ```
 
 is ENABLED by Shift+Cmd+P and then Sync: Advanced Options > Toggle Auto-Upload on Settings Change (You may have to toggle it depending on it's current default but definitely make sure it's ON)
+
+#### MS Sync 
+
+Unfortunately the Settings Sync that worked perfect with Git and Gists and was private is no longer. So now we get to expose everything to MS to sync. Progress!
+
+To enable the built in Settings Sync, click on the Gear in the lower left, Backup and Sync Settings, Sign in to GitHub (if this is personal or you wish to sync to a SPECIFIC GitHub, make sure you're logged in there first. It won't ask for credentials). You can also sync from your personal settings by signing into the personal, get everything synced, sign out and then sign in with your other account and sync there. Obviously that's a one-shot but at least you get all your plugins, etc. 
+
+### Git
+
+For the most part, git should be setup and ready to go from the installer. There will probably be site specific settings (ie your git email for the company you are developing for may be different). If so, just create a ~/.gitconfig.user file
+
+```bash
+[user]
+        name = Chris Hirsch
+        email = chris.hirsch@somerandomcompany.com
+
+[credential]
+        helper = cache --timeout 2592000
+        helper =
+        helper = /usr/local/share/gcm-core/git-credential-manager
+        guiPrompt = false
+
+[commit]
+        gpgSign = true
+
+[credential "https://dev.azure.com"]
+        useHttpPath = true
+```
+
+This will override any more general config in ~/.gitconfig 

@@ -29,6 +29,18 @@ set_project() {
 # From https://obsproject.com/forum/threads/obs-virtual-cam-to-discord.133437/
 fix_obs_discord="sudo codesign --remove-signature /Applications/Discord.app/Contents/Frameworks/Discord\ Helper\ \(GPU\).app /Applications/Discord.app/Contents/Frameworks/Discord\ Helper\ \(Plugin\).app /Applications/Discord.app/Contents/Frameworks/Discord\ Helper\ \(Renderer\).app /Applications/Discord.app/Contents/Frameworks/Discord\ Helper.app"
 
+
+alias dusort='du -sk * | sort -n | awk '\''
+{ if ($1 < 1024) { output("K", 1) }
+  else if ($1 < 1048576) { output("M", 1024) }
+  else { output("G", 1048576) }
+}
+function output(size, div)
+{
+  printf "%d%s\t%s\n", ($1/div), size, $2
+}
+'\'''
+
 # Get running service from docker swarm
 alias dsps="docker service ps $1  --filter desired-state=running"
 
