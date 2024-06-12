@@ -31,6 +31,8 @@ brew "action-validator"
 brew "actionlint"
 brew "ansible"
 brew "ansible-lint"
+# CLI For ArgoCD
+brew "argocd"
 brew "asciiquarium"
 # Tool version Manager used for Elixir http://asdf-vm.com/guide/introduction.html#how-it-works
 # No longer supported (ie malware?)
@@ -76,6 +78,8 @@ brew "docker-compose"
 brew "docker-credential-helper"
 # Practice your coding via exercism.io
 brew "exercism"
+# AWS Kubernetes CLI
+brew "eksctl"
 brew "findutils"
 brew "flake8"
 brew "ffmpeg"
@@ -101,6 +105,7 @@ brew "jless"
 # JSON Web Tokens CLI Decoder/Encoder
 brew "jwt-cli"
 brew "jsonlint"
+brew "kind"
 # https://github.com/atombender/ktail
 brew "ktail" 
 brew "k9s" 
@@ -250,6 +255,8 @@ cask "postico"
 cask "powershell"
 # SMS across devices
 cask "pulse-sms"
+# Python sytax highlighter
+cask "pygments"
 # Rancher Desktop rancherdesktop.io is an alternative to Docker Desktop (and free)
 cask "rancher"
 # Replaced spectacle

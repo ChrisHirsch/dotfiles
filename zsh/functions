@@ -92,3 +92,15 @@ function aws_tail_log_groups() {
   printf "SINCE=$SINCE\n"
   aws logs tail ${LOG_GROUP} --follow --format short ${FILTER_PATTERN} ${FILTER} --since ${SINCE}
 }
+
+function venv() {
+  if [ -d .venv ]; then
+    printf "Activating existing ${pwd}/.venv...\n"
+    . ./.venv/bin/activate
+  else
+    printf "Creating new ${pwd}/.venv...\n"
+    py -m venv create .venv
+    printf "Rerun venv to activate...\n"
+
+  fi
+}
