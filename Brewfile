@@ -139,9 +139,11 @@ brew "ollama"
 brew "pandoc"
 brew "packer"
 brew "pdf2svg"
+# Python virtual envs for humans
+brew "pipenv"
 # Python Package Manager
 brew "poetry"
-brew "python@3.11"
+brew "python"
 brew "pyenv-virtualenv"
 brew "qemu"
 # Remove PDF Passowrd
