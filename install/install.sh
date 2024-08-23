@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -e
+#set -e
 
 # Set OS specific variables
 set_os_vars() {
@@ -76,6 +76,11 @@ tmux() {
   ln -sf ~/dotfiles/tmux.conf ~/.tmux.conf
 }
 ssh() {
+  logger "Configuring ssh..."
+  if [ ! -d ~/.ssh ]; then
+    logger "Creating ~/.ssh directory ..."
+    mkdir -p ~/.ssh
+  fi
   ln -sf ~/dotfiles/ssh/config ~/.ssh/config
   mkdir -p ~/.ssh/sockets
 }

@@ -1,3 +1,4 @@
+# brew bundle --file ~/Brewfile
 # Taps
 tap "atombender/ktail"
 #tap "chef/chef"
@@ -17,6 +18,9 @@ tap "chef/chef"
 tap "benwebber/tunnelblickctl"
 # For dockle
 tap "goodwithtech/r"
+tap "mike-engel/jwt-cli"
+# For Git -> Confluence Documentation
+tap "kovetskiy/mark"
 
 # Binaries
 # A GitHub Action Runner for local development
@@ -55,9 +59,6 @@ brew "consul"
 brew "consul-template"
 # For things like realpath
 brew "coreutils"
-# Amazon Java JDK https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/what-is-corretto-11.html
-#brew "homebrew/cask-versions/corretto11"
-/usr/libexec/java_home --verbose
 brew "curl"
 #brew "elixir"
 #brew "dnsmasq", restart_service: true
@@ -77,10 +78,10 @@ brew "docker-credential-helper"
 brew "exercism"
 brew "findutils"
 brew "flake8"
-brew "fluxctl"
 brew "ffmpeg"
 brew "fzf"
 brew "git"
+brew "git-credential-manager"
 brew "git-lfs"
 brew "gnu-getopt"
 # Similar to htop but more details
@@ -98,7 +99,7 @@ brew "jfrog-cli"
 # Interactive json cli too https://pauljuliusmartinez.github.io/?ref=console.dev
 brew "jless"
 # JSON Web Tokens CLI Decoder/Encoder
-brew "mike-engel/jwt-cli/jwt-cli"
+brew "jwt-cli"
 brew "jsonlint"
 # https://github.com/atombender/ktail
 brew "ktail" 
@@ -113,6 +114,8 @@ brew "kustomize"
 brew "libheif"
 brew "maven"
 brew "make"
+# For Git -> Confluence Documentation
+brew "mark"
 brew "minikube"
 # A super power paging program https://www.jedsoft.org/most/
 brew "most"
@@ -122,16 +125,24 @@ brew "npm"
 brew "node"
 # NodeJS Version Manager
 brew "nvm"
+# LLM Cli 
+brew "ollama"
 # https://github.com/vmware-tanzu/octant
 # Shows how applications run on k8s
-brew "octant"
+# Dead?
+# brew "octant"
 brew "pandoc"
 brew "packer"
 brew "pdf2svg"
+# Python Package Manager
+brew "poetry"
 brew "python@3.11"
 brew "pyenv-virtualenv"
+brew "qemu"
 # Remove PDF Passowrd
 brew "qpdf"
+# CLI tool for working with CloudFormation https://github.com/aws-cloudformation/rain
+brew "rain"
 brew "rename"
 brew "rust"
 # https://github.com/mozilla/sops manages secrets for helmfile
@@ -177,6 +188,8 @@ cask "caffeine"
 cask "chef/chef/inspec"
 # Ebook Organizer
 cask "calibre"
+# Amazon Java JDK https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/what-is-corretto-11.html
+cask "corretto11"
 cask "cyberduck"
 # Database GUI
 cask "dbeaver-community"
@@ -240,7 +253,6 @@ cask "postico"
 cask "powershell"
 # SMS across devices
 cask "pulse-sms"
-cask "qemu"
 # Rancher Desktop rancherdesktop.io is an alternative to Docker Desktop (and free)
 cask "rancher"
 # Replaced spectacle
