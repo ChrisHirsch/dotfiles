@@ -211,6 +211,7 @@ cask "mitmproxy"
 # An opensource Redis Client GUI
 cask "medis"
 # Graphical Diff
+# Probably want https://github.com/yousseb/meld instead?
 cask "meld"
 # Autodesk meshmixer used to separate polygons for multicolor MMU prints
 #cask "meshmixer"

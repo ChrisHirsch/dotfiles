@@ -16,6 +16,9 @@
     "altThirdCycle" : {
       "int" : 0
     },
+    "alwaysAccountForStage" : {
+      "int" : 0
+    },
     "applyGapsToMaximize" : {
       "int" : 0
     },
@@ -46,8 +49,26 @@
     "disabledApps" : {
 
     },
+    "doubleClickTitleBar" : {
+      "int" : 0
+    },
+    "doubleClickTitleBarIgnoredApps" : {
+
+    },
+    "doubleClickTitleBarRestore" : {
+      "int" : 0
+    },
+    "dragFromStage" : {
+      "int" : 0
+    },
+    "enhancedUI" : {
+      "int" : 1
+    },
     "footprintAlpha" : {
-      "float" : 0.30000001192092896
+      "float" : 0.3
+    },
+    "footprintAnimationDurationMultiplier" : {
+      "float" : 0
     },
     "footprintBorderWidth" : {
       "float" : 2
@@ -64,11 +85,20 @@
     "gapSize" : {
       "float" : 0
     },
+    "hapticFeedbackOnSnap" : {
+      "int" : 0
+    },
     "hideMenubarIcon" : {
-      "bool" : false
+      "bool" : true
+    },
+    "ignoreDragSnapToo" : {
+      "int" : 0
     },
     "ignoredSnapAreas" : {
       "int" : 0
+    },
+    "landscapeSnapAreas" : {
+
     },
     "launchOnLogin" : {
       "bool" : true
@@ -78,6 +108,15 @@
     },
     "minimumWindowWidth" : {
       "float" : 0
+    },
+    "missionControlDragging" : {
+      "int" : 0
+    },
+    "missionControlDraggingAllowedOffscreenDistance" : {
+      "float" : 25
+    },
+    "missionControlDraggingDisallowedDuration" : {
+      "int" : 250
     },
     "moveCursor" : {
       "int" : 0
@@ -90,6 +129,9 @@
     },
     "obtainWindowOnClick" : {
       "int" : 0
+    },
+    "portraitSnapAreas" : {
+
     },
     "relaunchOpensMenu" : {
       "bool" : false
@@ -106,13 +148,22 @@
     "screenEdgeGapRight" : {
       "float" : 0
     },
+    "screenEdgeGapsOnMainScreenOnly" : {
+      "bool" : false
+    },
     "screenEdgeGapTop" : {
+      "float" : 0
+    },
+    "screenEdgeGapTopNotch" : {
       "float" : 0
     },
     "shortEdgeSnapAreaSize" : {
       "float" : 145
     },
     "showAllActionsInMenu" : {
+      "int" : 0
+    },
+    "sixthsSnapArea" : {
       "int" : 0
     },
     "sizeOffset" : {
@@ -139,11 +190,20 @@
     "specifiedWidth" : {
       "float" : 1680
     },
+    "stageSize" : {
+      "float" : 190
+    },
     "subsequentExecutionMode" : {
       "int" : 1
     },
     "SUEnableAutomaticChecks" : {
       "bool" : true
+    },
+    "systemWideMouseDown" : {
+      "int" : 0
+    },
+    "systemWideMouseDownApps" : {
+
     },
     "todo" : {
       "int" : 0
@@ -153,6 +213,9 @@
     },
     "todoMode" : {
       "bool" : false
+    },
+    "todoSidebarSide" : {
+      "int" : 1
     },
     "todoSidebarWidth" : {
       "float" : 400
@@ -228,6 +291,10 @@
       "keyCode" : 123,
       "modifierFlags" : 1835008
     },
+    "reflowTodo" : {
+      "keyCode" : 45,
+      "modifierFlags" : 786432
+    },
     "restore" : {
       "keyCode" : 51,
       "modifierFlags" : 786432
@@ -238,6 +305,10 @@
     },
     "smaller" : {
       "keyCode" : 27,
+      "modifierFlags" : 786432
+    },
+    "toggleTodo" : {
+      "keyCode" : 11,
       "modifierFlags" : 786432
     },
     "topHalf" : {
@@ -253,5 +324,5 @@
       "modifierFlags" : 786432
     }
   },
-  "version" : "59"
+  "version" : "86"
 }

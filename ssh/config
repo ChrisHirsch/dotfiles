@@ -16,11 +16,22 @@ Host localhost
   PubkeyAcceptedAlgorithms +ssh-rsa
   HostkeyAlgorithms +ssh-rsa
 
+  # Aragorn is too old
+Host 10.69.0.107
+  HostKeyAlgorithms +ssh-rsa
+  PubkeyAcceptedKeyTypes +ssh-rsa
+
 # Disable strict key checking for the FRC RoboRio
 Host 10.32.0.2 
     StrictHostKeyChecking no
     User lvuser
     # User admin for root
+
+# In an attempt to allow vnc to connect
+Host proxmox*.kiatek.com
+	StrictHostKeyChecking no
+Host proxmox*
+	StrictHostKeyChecking no
 
 Host *.amazonaws.com
   # https://developer.rackspace.com/blog/speeding-up-ssh-session-creation/
