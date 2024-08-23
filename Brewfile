@@ -166,6 +166,8 @@ brew "termshark"
 brew "tfenv"
 brew "the_silver_searcher"
 brew "tmux"
+# https://github.com/kubeshop/tracetest?tab=readme-ov-file
+brew "kubeshop/tracetest/tracetest"
 brew "tree"
 # License not opensource?
 #brew "unrar"
@@ -231,6 +233,7 @@ cask "mitmproxy"
 # An opensource Redis Client GUI
 cask "medis"
 # Graphical Diff
+# Probably want https://github.com/yousseb/meld instead?
 cask "meld"
 # Autodesk meshmixer used to separate polygons for multicolor MMU prints
 #cask "meshmixer"
