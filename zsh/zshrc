@@ -111,8 +111,10 @@ plugins=(
   oc 
   macos
   mvn
+  npm
   pep8
   pip
+  pnpm
   poetry
   python
   kubectl 
@@ -168,15 +170,16 @@ export PATH=~/Downloads/packer:$PATH
 
 # For Go
 export GOPATH="$HOME/src/go/"
-#if [[ "$OSTYPE" == "darwin"* ]]; then
-#  if [[ "$CPUTYPE" == "x86_64" ]]; then
-#    GOROOT=/usr/local/opt/go/libexec
-#  else
-#    GOROOT=/opt/homebrew/opt/go/libexec
-#  fi
-#else
-#  GOROOT=/usr/local/go/libexec
-#fi
+if [[ "$OSTYPE" == "darwin"* ]]; then
+  if [[ "$CPUTYPE" == "x86_64" ]]; then
+    GOROOT=/usr/local/opt/go/libexec
+  else
+    #GOROOT=/opt/homebrew/opt/go/libexec
+    GOROOT=/opt/homebrew/bin/go
+  fi
+else
+  GOROOT=/usr/local/go/libexec
+fi
 
 # As of CY2023, for any modern Go installation, do not set/export GOROOT.
 #export GOROOT=/usr/local/go
@@ -333,3 +336,4 @@ eval "$(pyenv init -)"
 ### MANAGED BY RANCHER DESKTOP START (DO NOT EDIT)
 export PATH="/Users/chirsch/.rd/bin:$PATH"
 ### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
+alias meld='meld_script(){ /Applications/Meld.app/Contents/MacOS/Meld $* 2>/dev/null & };meld_script'
