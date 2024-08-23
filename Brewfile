@@ -70,6 +70,8 @@ brew "dive"
 # https://github.com/goodwithtech/dockle
 # Contianer Image Linter
 brew "dockle"
+# Github CLI
+brew "gh"
 brew "go"
 # Golang linter
 brew "golangci-lint"

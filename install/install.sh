@@ -129,6 +129,15 @@ oh_my_zsh() {
   # Need to explicitly git clone the zsh-completions (plugins no longer work)
   # https://github.com/zsh-users/zsh-completions/issues/603
   git clone https://github.com/zsh-users/zsh-completions ${ZSH_CUSTOM:-${ZSH:-~/.oh-my-zsh}/custom}/plugins/zsh-completions
+  if [ -d ~/.oh-my-zsh/custom/plugins/pnpm ]; then
+    logger "pnpm plugin already cloned..updating..."
+    cd ~/.oh-my-zsh/custom/plugins/pnpm 
+    git pull origin
+    cd -
+  else
+    logger "Cloning pnpm plugin..."
+    git clone --depth=1 https://github.com/ntnyq/omz-plugin-pnpm.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/pnpm
+  fi
 }
 
 install_mac_packages() {
