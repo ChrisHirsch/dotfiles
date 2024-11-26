@@ -138,6 +138,15 @@ oh_my_zsh() {
     logger "Cloning pnpm plugin..."
     git clone --depth=1 https://github.com/ntnyq/omz-plugin-pnpm.git ${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/plugins/pnpm
   fi
+  if [ -d ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions ]; then
+    logger "zsh-autosuggestions plugin already cloned..updating..."
+    cd ~/.oh-my-zsh/custom/plugins/zsh-autosuggestions 
+    git pull origin
+    cd -
+  else
+    logger "Cloning zsh-autosuggestions plugin..."
+    git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+  fi
 }
 
 install_mac_packages() {
