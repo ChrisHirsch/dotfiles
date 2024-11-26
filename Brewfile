@@ -97,6 +97,8 @@ brew "gping"
 brew "helm"
 brew "helmfile"
 brew "htop"
+# Network performance tool
+brew "iperf3"
 # JSON diff
 brew "jd"
 brew "jq"
