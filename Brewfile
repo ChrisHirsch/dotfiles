@@ -145,6 +145,8 @@ brew "pdf2svg"
 brew "pipenv"
 # Python Package Manager
 brew "poetry"
+# A TUI pinger like smokeping to show historical pings
+brew "prettyping"
 brew "python"
 brew "pyenv-virtualenv"
 brew "qemu"

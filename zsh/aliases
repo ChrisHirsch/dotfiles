@@ -103,8 +103,10 @@ alias mytest="echo Make it say: $1"
 # MAY also have to   sudo ln -sfn /usr/local/opt/openjdk/libexec/openjdk.jdk /Library/Java/JavaVirtualMachines/openjdk.jdk to bootstrap
 #export JAVA_8_HOME=$(/usr/libexec/java_home -v1.8)
 export JAVA_11_HOME=$(/usr/libexec/java_home -v11)
+export JAVA_21_HOME=$(/usr/libexec/java_home -v21)
 #alias java8='export JAVA_HOME=$JAVA_8_HOME'
 alias java11='export JAVA_HOME=$JAVA_11_HOME'
-# default to Java 11 Corsetto
-java11
+alias java21='export JAVA_HOME=$JAVA_21_HOME'
+# default to Java 21 Corsetto
+java21
 

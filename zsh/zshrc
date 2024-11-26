@@ -88,6 +88,7 @@ COMPLETION_WAITING_DOTS="true"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
+# Usage examples: https://travis.media/top-10-oh-my-zsh-plugins-for-productive-developers/
 plugins=(
   #1password
   ansible
@@ -96,6 +97,8 @@ plugins=(
   brew
   common-aliases 
   colorize
+  copypath
+  dirhistory
   docker 
   docker-compose
   fzf 
@@ -105,7 +108,7 @@ plugins=(
   git-extras 
   golang
   helm
-  history 
+  #history 
   iterm2
   jira
   oc 
@@ -117,6 +120,7 @@ plugins=(
   pnpm
   poetry
   python
+  sudo
   kubectl 
   kube-ps1 
   terraform 
@@ -124,7 +128,9 @@ plugins=(
   vagrant
   vi-mode
   vscode
+  web-search
   zsh-completions
+  zsh-autosuggestions
 )
 
 
