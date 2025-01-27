@@ -66,8 +66,7 @@ brew "coreutils"
 brew "curl"
 #brew "elixir"
 #brew "dnsmasq", restart_service: true
-# A tool for exploring a docker image, layer contents, and discovering ways to shrink the size of your Docker/OCI image.
-# https://github.com/wagoodman/dive
+
 brew "dive"
 # https://github.com/goodwithtech/dockle
 # Contianer Image Linter
@@ -157,6 +156,8 @@ brew "pyenv-virtualenv"
 brew "qemu"
 # Remove PDF Passowrd
 brew "qpdf"
+# Python sytax highlighter
+brew "pygments"
 # CLI tool for working with CloudFormation https://github.com/aws-cloudformation/rain
 brew "rain"
 # Fast alternative to grep https://github.com/BurntSushi/ripgrep (needed for neovim telescope too)
@@ -207,14 +208,14 @@ cask "chef/chef/inspec"
 # Ebook Organizer
 cask "calibre"
 # Amazon Java JDK https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/what-is-corretto-11.html
-cask "corretto11"
+cask "corretto@11"
 cask "cyberduck"
 # Database GUI
 cask "dbeaver-community"
 cask "discord"
 # Not sure we really want this any more given that Docker wants a license for your desktop use
 # Try Rancher Desktop for an alternative
-# cask "docker"
+cask "docker"
 cask "evernote"
 cask "firefox"
 # Best screen color changer (for day/night)
@@ -273,10 +274,8 @@ cask "postico"
 cask "powershell"
 # SMS across devices
 cask "pulse-sms"
-# Python sytax highlighter
-cask "pygments"
 # Rancher Desktop rancherdesktop.io is an alternative to Docker Desktop (and free)
-cask "rancher"
+#cask "rancher"
 # Replaced spectacle
 cask "rectangle"
 # Quickly prototype react apps
