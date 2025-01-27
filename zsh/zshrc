@@ -343,3 +343,6 @@ eval "$(pyenv init -)"
 export PATH="/Users/chirsch/.rd/bin:$PATH"
 ### MANAGED BY RANCHER DESKTOP END (DO NOT EDIT)
 alias meld='meld_script(){ /Applications/Meld.app/Contents/MacOS/Meld $* 2>/dev/null & };meld_script'
+
+# For LaTeX
+export PATH="$PATH:/Library/TeX/texbin"

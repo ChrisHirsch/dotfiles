@@ -130,6 +130,7 @@ brew "minikube"
 brew "most"
 brew "mplayer"
 brew "newsboat"
+brew "neovim"
 brew "npm"
 brew "node"
 # NodeJS Version Manager
@@ -156,6 +157,8 @@ brew "qemu"
 brew "qpdf"
 # CLI tool for working with CloudFormation https://github.com/aws-cloudformation/rain
 brew "rain"
+# Fast alternative to grep https://github.com/BurntSushi/ripgrep (needed for neovim telescope too)
+brew "ripgrep"
 brew "rename"
 brew "rust"
 # https://github.com/mozilla/sops manages secrets for helmfile
@@ -231,6 +234,8 @@ cask "keybase"
 cask "lens"
 # Animated Screen Capture
 cask "licecap"
+# For working with latex
+cask "mactex"
 cask "microsoft-teams"
 # Like Charlesproxy but opensource https://mitmproxy.org
 cask "mitmproxy"
