@@ -5,7 +5,7 @@ tap "atombender/ktail"
 tap "derailed/k9s"
 tap "homebrew/bundle"
 # For installing multiple java versions https://medium.com/w-logs/installing-java-11-on-macos-with-homebrew-7f73c1e9fadf
-tap "homebrew/cask-versions"
+#tap "homebrew/cask-versions"
 tap "homebrew/services"
 tap "int128/kubelogin"
 # https://www.hashicorp.com/blog/announcing-hashicorp-homebrew-tap
@@ -47,6 +47,8 @@ brew "bash"
 brew "bash-completion@2"
 # Best cat/more/less formatter
 brew "bat"
+# https://rtyley.github.io/bfg-repo-cleaner/ (to remove secrets/big files from your git repo)
+brew "bfg"
 brew "cmake"
 # Cloud Formation Linter
 brew "cfn-lint"
