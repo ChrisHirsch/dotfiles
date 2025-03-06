@@ -49,7 +49,6 @@ brew "bash-completion@2"
 brew "bat"
 # https://rtyley.github.io/bfg-repo-cleaner/ (to remove secrets/big files from your git repo)
 brew "bfg"
-brew "bruno"
 brew "cmake"
 # Cloud Formation Linter
 brew "cfn-lint"
@@ -203,6 +202,7 @@ cask "1password-cli"
 cask "apptrap"
 # Great USB Imager
 cask "balenaetcher"
+cask "bruno"
 # Don't let the mac fall asleep (clickable)
 cask "caffeine"
 cask "chef/chef/inspec"
