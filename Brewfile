@@ -49,6 +49,7 @@ brew "bash-completion@2"
 brew "bat"
 # https://rtyley.github.io/bfg-repo-cleaner/ (to remove secrets/big files from your git repo)
 brew "bfg"
+brew "bruno"
 brew "cmake"
 # Cloud Formation Linter
 brew "cfn-lint"
