@@ -18,7 +18,13 @@ Browse to https://brew.sh/ and install brew or
 
 ```bash
 /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
-``` 
+```
+
+Run the eval command to get brew in your path
+
+```bash
+eval "$(/opt/homebrew/bin/brew shellenv)"
+```
 
 It's a bit of chicken and egg problem as the installer WILL install Brew but you want to be already running from iTerm.
 
