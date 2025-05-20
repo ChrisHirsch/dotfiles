@@ -1,50 +1,53 @@
 Include ~/.ssh/config.user
 
 Host *
-    AddKeysToAgent yes
-    ForwardAgent yes
-    ForwardX11 yes
-    ForwardX11Trusted yes
-    KeepAlive yes
-    ServerAliveInterval 120
-    ServerAliveCountMax 120
+AddKeysToAgent yes
+ForwardAgent yes
+ForwardX11 yes
+ForwardX11Trusted yes
+KeepAlive yes
+ServerAliveInterval 120
+ServerAliveCountMax 120
 # For the slow host lookups disables ipv6
-    AddressFamily inet
-    Tunnel yes
+AddressFamily inet
+Tunnel yes
 
 Host localhost
-  PubkeyAcceptedAlgorithms +ssh-rsa
-  HostkeyAlgorithms +ssh-rsa
+PubkeyAcceptedAlgorithms +ssh-rsa
+HostkeyAlgorithms +ssh-rsa
 
-  # Aragorn is too old
+# Aragorn is too old
 Host 10.69.0.107
-  HostKeyAlgorithms +ssh-rsa
-  PubkeyAcceptedKeyTypes +ssh-rsa
+HostKeyAlgorithms +ssh-rsa
+PubkeyAcceptedKeyTypes +ssh-rsa
 
 # Disable strict key checking for the FRC RoboRio
-Host 10.32.0.2 
-    StrictHostKeyChecking no
-    User lvuser
-    # User admin for root
+Host 10.32.0.2
+StrictHostKeyChecking no
+User lvuser
+# User admin for root
 
 # In an attempt to allow vnc to connect
 Host proxmox*.kiatek.com
-	StrictHostKeyChecking no
+StrictHostKeyChecking no
 Host proxmox*
-	StrictHostKeyChecking no
+StrictHostKeyChecking no
 
 Host *.amazonaws.com
-  # https://developer.rackspace.com/blog/speeding-up-ssh-session-creation/
-  ControlPath ~/.ssh/sockets/%h
-  ControlMaster auto
-  ControlPersist 600
-  User ec2-user
+# https://developer.rackspace.com/blog/speeding-up-ssh-session-creation/
+ControlPath ~/.ssh/sockets/%h
+ControlMaster auto
+ControlPersist 600
+User ec2-user
 
 Host *
-  # https://developer.rackspace.com/blog/speeding-up-ssh-session-creation/
-  # https://dammit.nl/ssh-unix-socket.html to fix the unix_listener too long for domain socket 
-  # Keep the %n so we can find the socket if we need to remove it (stale, etc)
-  #ControlPath ~/.ssh/sockets/%n%C
-  ControlPath ~/.ssh/sockets/%C
-  ControlMaster auto
-  ControlPersist 600
+# https://developer.rackspace.com/blog/speeding-up-ssh-session-creation/
+# https://dammit.nl/ssh-unix-socket.html to fix the unix_listener too long for domain socket
+# Keep the %n so we can find the socket if we need to remove it (stale, etc)
+#ControlPath ~/.ssh/sockets/%n%C
+ControlPath ~/.ssh/sockets/%C
+ControlMaster auto
+ControlPersist 600
+
+Match all
+Include bnn.config
