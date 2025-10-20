@@ -75,6 +75,7 @@ brew "dockle"
 # Github CLI
 brew "gh"
 brew "go"
+brew "gofumpt"
 # Golang linter
 brew "golangci-lint"
 brew "gopls"
@@ -120,6 +121,8 @@ brew "kubectx"
 brew "kubelogin"
 # See K8S resources in realtime 
 brew "kubespy"
+# A Kubernetes Linter https://docs.kubelinter.io/#/
+brew "kube-linter"
 brew "kustomize"
 # For heif-convert cli tool
 brew "libheif"
@@ -179,6 +182,8 @@ brew "tree"
 #brew "unrar"
 brew "unnethack"
 brew "wireshark"
+# FAST Swagger linter for cli
+brew "install daveshanley/vacuum/vacuum"
 brew "vim"
 # Versatile HTTP load tester 
 brew "vegeta"
