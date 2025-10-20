@@ -143,6 +143,8 @@ brew "node"
 brew "nvm"
 # LLM Cli 
 brew "ollama"
+# Terraform replacement
+brew "opentofu"
 # https://github.com/vmware-tanzu/octant
 # Shows how applications run on k8s
 # Dead?
