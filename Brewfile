@@ -223,6 +223,8 @@ cask "firefox"
 cask "flux"
 # Excellent Git GUI
 cask "fork"
+# Terminal
+cask "ghostty"
 cask "google-chrome"
 cask "google-cloud-sdk"
 #cask "imagealpha"
