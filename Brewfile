@@ -34,9 +34,8 @@ brew "ansible-lint"
 # CLI For ArgoCD
 brew "argocd"
 brew "asciiquarium"
-# Tool version Manager used for Elixir http://asdf-vm.com/guide/introduction.html#how-it-works
-# No longer supported (ie malware?)
-# brew "asdf"
+# Ruby/Node/etc Tool Version Manager
+brew "asdf"
 brew "awscli"
 brew "aws-sam-cli"
 brew "aws-vault"
@@ -66,8 +65,7 @@ brew "coreutils"
 brew "curl"
 #brew "elixir"
 #brew "dnsmasq", restart_service: true
-# A tool for exploring a docker image, layer contents, and discovering ways to shrink the size of your Docker/OCI image.
-# https://github.com/wagoodman/dive
+
 brew "dive"
 # https://github.com/goodwithtech/dockle
 # Contianer Image Linter
@@ -126,6 +124,9 @@ brew "kube-linter"
 brew "kustomize"
 # For heif-convert cli tool
 brew "libheif"
+# For Ruby on Rails with libpq
+brew "libpq"
+
 brew "maven"
 brew "make"
 # For Git -> Confluence Documentation
@@ -135,12 +136,15 @@ brew "minikube"
 brew "most"
 brew "mplayer"
 brew "newsboat"
+brew "neovim"
 brew "npm"
 brew "node"
 # NodeJS Version Manager
 brew "nvm"
 # LLM Cli 
 brew "ollama"
+# Terraform replacement
+brew "opentofu"
 # https://github.com/vmware-tanzu/octant
 # Shows how applications run on k8s
 # Dead?
@@ -159,8 +163,12 @@ brew "pyenv-virtualenv"
 brew "qemu"
 # Remove PDF Passowrd
 brew "qpdf"
+# Python sytax highlighter
+brew "pygments"
 # CLI tool for working with CloudFormation https://github.com/aws-cloudformation/rain
 brew "rain"
+# Fast alternative to grep https://github.com/BurntSushi/ripgrep (needed for neovim telescope too)
+brew "ripgrep"
 brew "rename"
 brew "rust"
 # https://github.com/mozilla/sops manages secrets for helmfile
@@ -182,8 +190,8 @@ brew "tree"
 #brew "unrar"
 brew "unnethack"
 brew "wireshark"
-# FAST Swagger linter for cli
-brew "install daveshanley/vacuum/vacuum"
+# OpenAPI Swagger validator and linter for cli
+brew "daveshanley/vacuum/vacuum"
 brew "vim"
 # Versatile HTTP load tester 
 brew "vegeta"
@@ -203,20 +211,21 @@ cask "1password-cli"
 cask "apptrap"
 # Great USB Imager
 cask "balenaetcher"
+cask "bruno"
 # Don't let the mac fall asleep (clickable)
 cask "caffeine"
 cask "chef/chef/inspec"
 # Ebook Organizer
 cask "calibre"
 # Amazon Java JDK https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/what-is-corretto-11.html
-cask "corretto11"
+cask "corretto@11"
 cask "cyberduck"
 # Database GUI
 cask "dbeaver-community"
 cask "discord"
 # Not sure we really want this any more given that Docker wants a license for your desktop use
 # Try Rancher Desktop for an alternative
-# cask "docker"
+cask "docker"
 cask "evernote"
 cask "firefox"
 # Best screen color changer (for day/night)
@@ -240,7 +249,8 @@ cask "keybase"
 cask "lens"
 # Animated Screen Capture
 cask "licecap"
-cask "microsoft-teams"
+# For working with latex
+cask "mactex"
 # Like Charlesproxy but opensource https://mitmproxy.org
 cask "mitmproxy"
 # An opensource Redis Client GUI
@@ -275,10 +285,8 @@ cask "postico"
 cask "powershell"
 # SMS across devices
 cask "pulse-sms"
-# Python sytax highlighter
-cask "pygments"
 # Rancher Desktop rancherdesktop.io is an alternative to Docker Desktop (and free)
-cask "rancher"
+#cask "rancher"
 # Replaced spectacle
 cask "rectangle"
 # Quickly prototype react apps
@@ -303,6 +311,8 @@ cask "vlc"
 # This includes the GUI
 cask "wireshark"
 cask "xscreensaver"
+# Comic CBZ reader
+cask "yacreader"
 # OWASP Web App Scanner - Zed Attack Proxy
 cask "zap"
 

@@ -256,7 +256,7 @@ gitinstall() {
   fi
 
 
-  logger "Updating meeting backgrounds submodule..."
+  logger "Updating meeting backgrounds and neovim submodules..."
   cd ~/dotfiles && git submodule update --init --recursive
 }
 
@@ -288,9 +288,14 @@ editors() {
       logger "Error! YouCompleteMe doesn't exist, but it should now that Plugins are installed. Try going into vim and running :PlugInstall"
       exit 1
     fi
-
   fi
 
+  if [ -L ~/.config/nvim ]; then
+    logger "NeoVim config already linked at ~/.config/nvim"
+  else
+    logger "NeoVim config linked to ~/.config/nvim"
+    ln -sf ~/dotfiles/nvim ~/.config/nvim
+  fi
 
   if [ ${machine} == 'Mac' ] ; then
     # Allow Key repeat for Visual Studio Code on a mac (for vim plugin)
@@ -298,7 +303,7 @@ editors() {
     # VSCodium
     # defaults write com.visualstudio.code.oss ApplePressAndHoldEnabled -bool false
   fi
-}
+  }
 
 
 set_os_vars
