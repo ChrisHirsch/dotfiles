@@ -346,3 +346,5 @@ alias meld='meld_script(){ /Applications/Meld.app/Contents/MacOS/Meld $* 2>/dev/
 
 # For LaTeX
 export PATH="$PATH:/Library/TeX/texbin"
+
+export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"

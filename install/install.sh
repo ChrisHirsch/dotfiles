@@ -59,6 +59,7 @@ create_symlinks() {
   ln -sf ~/dotfiles/zsh/functions ~/.functions
   ln -sf ~/dotfiles/golang/golangci.yaml ~/.golangci.yaml
   ln -sf ~/dotfiles/postgresql/psqlrc ~/.psqlrc
+  ln -sf ~/dotfiles/prettier/.prettierrc ~/.prettierrc
 }
 
 tmux() {
