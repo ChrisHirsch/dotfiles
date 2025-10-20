@@ -34,9 +34,8 @@ brew "ansible-lint"
 # CLI For ArgoCD
 brew "argocd"
 brew "asciiquarium"
-# Tool version Manager used for Elixir http://asdf-vm.com/guide/introduction.html#how-it-works
-# No longer supported (ie malware?)
-# brew "asdf"
+# Ruby/Node/etc Tool Version Manager
+brew "asdf"
 brew "awscli"
 brew "aws-sam-cli"
 brew "aws-vault"
@@ -122,6 +121,9 @@ brew "kubespy"
 brew "kustomize"
 # For heif-convert cli tool
 brew "libheif"
+# For Ruby on Rails with libpq
+brew "libpq"
+
 brew "maven"
 brew "make"
 # For Git -> Confluence Documentation
@@ -183,6 +185,8 @@ brew "tree"
 #brew "unrar"
 brew "unnethack"
 brew "wireshark"
+# OpenAPI Swagger validator
+brew "daveshanley/vacuum/vacuum"
 brew "vim"
 # Versatile HTTP load tester 
 brew "vegeta"
@@ -240,7 +244,6 @@ cask "lens"
 cask "licecap"
 # For working with latex
 cask "mactex"
-cask "microsoft-teams"
 # Like Charlesproxy but opensource https://mitmproxy.org
 cask "mitmproxy"
 # An opensource Redis Client GUI
@@ -301,6 +304,8 @@ cask "vlc"
 # This includes the GUI
 cask "wireshark"
 cask "xscreensaver"
+# Comic CBZ reader
+cask "yacreader"
 # OWASP Web App Scanner - Zed Attack Proxy
 cask "zap"
 
