@@ -52,6 +52,8 @@ brew "bat"
 brew "bats"
 # https://rtyley.github.io/bfg-repo-cleaner/ (to remove secrets/big files from your git repo)
 brew "bfg"
+# Protobuf build tool and schema registry CLI
+brew "bufbuild/buf/buf"
 brew "cmake"
 # Cloud Formation Linter
 brew "cfn-lint"
@@ -66,6 +68,8 @@ brew "consul"
 brew "consul-template"
 # For things like realpath
 brew "coreutils"
+# Why just use tmux or ghostty when you can have it all?
+brew "cmux"
 brew "curl"
 #brew "elixir"
 #brew "dnsmasq", restart_service: true
@@ -133,6 +137,8 @@ brew "libheif"
 brew "lazydocker"
 # TUI for your git work
 brew "lazygit"
+# Because why NOT have a TUI for makefiles
+brew "lazymake"
 brew "maven"
 brew "make"
 # For Git -> Confluence Documentation
