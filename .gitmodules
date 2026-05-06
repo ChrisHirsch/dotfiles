@@ -1,3 +1,6 @@
 [submodule "meeting_backgrounds"]
 	path = meeting_backgrounds
 	url = https://github.com/ChrisHirsch/dotfiles_meeting_backgrounds.git
+[submodule "nvim"]
+	path = nvim
+	url = https://gitlab.com/klevermonicker/nvim.git

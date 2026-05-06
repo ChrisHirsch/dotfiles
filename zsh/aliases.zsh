@@ -63,4 +63,3 @@ alias mytest="echo Make it say: $1"
 # Alias jql to a much better experience
 alias jql=jless
 
-

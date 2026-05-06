@@ -110,3 +110,9 @@ alias java21='export JAVA_HOME=$JAVA_21_HOME'
 # default to Java 21 Corsetto
 java21
 
+
+# NeoVim
+alias vi=nvim
+
+# Alias grep to ripgrep
+alias grep=rg
