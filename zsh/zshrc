@@ -348,3 +348,11 @@ alias meld='meld_script(){ /Applications/Meld.app/Contents/MacOS/Meld $* 2>/dev/
 export PATH="$PATH:/Library/TeX/texbin"
 
 export PATH="/opt/homebrew/opt/postgresql@17/bin:$PATH"
+
+# override the default config of MacOS: ~/Library/Application\ Support/lazygit/config.yml
+export XDG_CONFIG_HOME="$HOME/.config"
+
+# Because MS sucks so bad and wants all your personal data
+# Don't allow GitHub to track your cli usage
+export GH_TELEMETRY=false
+export DO_NOT_TRACK=true
