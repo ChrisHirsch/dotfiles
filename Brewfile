@@ -1,7 +1,7 @@
 # brew bundle --file ~/Brewfile
 # Taps
 tap "atombender/ktail"
-#tap "chef/chef"
+tap "daveshanley/vacuum"
 tap "derailed/k9s"
 tap "homebrew/bundle"
 # For installing multiple java versions https://medium.com/w-logs/installing-java-11-on-macos-with-homebrew-7f73c1e9fadf
@@ -21,6 +21,7 @@ tap "goodwithtech/r"
 tap "mike-engel/jwt-cli"
 # For Git -> Confluence Documentation
 tap "kovetskiy/mark"
+
 
 # Binaries
 # A GitHub Action Runner for local development
@@ -46,8 +47,12 @@ brew "bash"
 brew "bash-completion@2"
 # Best cat/more/less formatter
 brew "bat"
+# Bash test framework https://bats-core.readthedocs.io/en/stable/
+brew "bats"
 # https://rtyley.github.io/bfg-repo-cleaner/ (to remove secrets/big files from your git repo)
 brew "bfg"
+# Protobuf build tool and schema registry CLI
+brew "bufbuild/buf/buf"
 brew "cmake"
 # Cloud Formation Linter
 brew "cfn-lint"
@@ -62,6 +67,8 @@ brew "consul"
 brew "consul-template"
 # For things like realpath
 brew "coreutils"
+# Why just use tmux or ghostty when you can have it all?
+brew "cmux"
 brew "curl"
 #brew "elixir"
 #brew "dnsmasq", restart_service: true
@@ -124,9 +131,14 @@ brew "kube-linter"
 brew "kustomize"
 # For heif-convert cli tool
 brew "libheif"
+# TUI for your for docker shenanigans. 
+brew "lazydocker"
+# TUI for your git work
+brew "lazygit"
+# Because why NOT have a TUI for makefiles
+brew "lazymake"
 # For Ruby on Rails with libpq
 brew "libpq"
-
 brew "maven"
 brew "make"
 # For Git -> Confluence Documentation
@@ -190,8 +202,6 @@ brew "tree"
 #brew "unrar"
 brew "unnethack"
 brew "wireshark"
-# OpenAPI Swagger validator and linter for cli
-brew "daveshanley/vacuum/vacuum"
 brew "vim"
 # Versatile HTTP load tester 
 brew "vegeta"
@@ -211,6 +221,8 @@ cask "1password-cli"
 cask "apptrap"
 # Great USB Imager
 cask "balenaetcher"
+# A better? alternative to dbeaver with vim keybindings
+cask "beekeeper-studio"
 cask "bruno"
 # Don't let the mac fall asleep (clickable)
 cask "caffeine"
@@ -222,6 +234,8 @@ cask "corretto@11"
 cask "cyberduck"
 # Database GUI
 cask "dbeaver-community"
+# The best open source diagram program
+cask "drawio"
 cask "discord"
 # Not sure we really want this any more given that Docker wants a license for your desktop use
 # Try Rancher Desktop for an alternative
@@ -229,13 +243,13 @@ cask "docker"
 cask "evernote"
 cask "firefox"
 # Best screen color changer (for day/night)
-cask "flux"
+cask "flux-app"
 # Excellent Git GUI
 cask "fork"
 # Terminal
 cask "ghostty"
+cask "gcloud-cli"
 cask "google-chrome"
-cask "google-cloud-sdk"
 #cask "imagealpha"
 #cask "imageoptim"
 cask "inkscape"
@@ -295,13 +309,15 @@ cask "react-proto"
 cask "signal"
 cask "slack"
 cask "spotify"
-cask "todoist"
+cask "todoist-app"
 cask "the-unarchiver"
 cask "thunderbird"
 #cask "transmission"
 # VPN GUI for OpenVPN
 #cask "tunnelblick"
 #cask "tunnelblickctl"
+# FAST Swagger linter for cli
+cask "daveshanley/vacuum/vacuum"
 cask "vagrant"
 cask "virtualbox"
 # Open source version of Visual Studio Code
@@ -309,7 +325,7 @@ cask "virtualbox"
 cask "visual-studio-code"
 cask "vlc"
 # This includes the GUI
-cask "wireshark"
+cask "wireshark-app"
 cask "xscreensaver"
 # Comic CBZ reader
 cask "yacreader"
