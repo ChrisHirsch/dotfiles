@@ -60,6 +60,7 @@ create_symlinks() {
   ln -sf ~/dotfiles/golang/golangci.yaml ~/.golangci.yaml
   ln -sf ~/dotfiles/postgresql/psqlrc ~/.psqlrc
   ln -sf ~/dotfiles/prettier/.prettierrc ~/.prettierrc
+  ln -sf ~/dotfiles/colima/colima.yaml ~/.colima/default/colima.yaml
 }
 
 tmux() {
@@ -306,6 +307,21 @@ editors() {
   }
 
 
+colima() {
+  logger "Setting up Colima config..."
+  if [ ! -d ~/.colima/default ]; then
+    logger "Creating ~/.colima/default directory..."
+    mkdir -p ~/.colima/default
+  fi
+  if [ -L ~/.colima/default/colima.yaml ]; then
+    logger "Colima config already linked at ~/.colima/default/colima.yaml"
+  else
+    logger "Linking Colima config to ~/.colima/default/colima.yaml"
+    ln -sf ~/dotfiles/colima/colima.yaml ~/.colima/default/colima.yaml
+  fi
+}
+
+
 set_os_vars
 create_symlinks
 install_packages
@@ -316,5 +332,6 @@ kubernetes
 tmux
 gitinstall
 editors
+colima
 #elixirinstall
 #Need to use https://github.com/deadc0de6/dotdrop
