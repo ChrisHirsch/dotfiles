@@ -1,26 +1,22 @@
 # brew bundle --file ~/Brewfile
 # Taps
-tap "atombender/ktail"
+tap "atombender/ktail", trusted:true
 #tap "chef/chef"
-tap "derailed/k9s"
-tap "homebrew/bundle"
+tap "derailed/k9s", trusted: true
 # For installing multiple java versions https://medium.com/w-logs/installing-java-11-on-macos-with-homebrew-7f73c1e9fadf
 #tap "homebrew/cask-versions"
-tap "homebrew/services"
-tap "int128/kubelogin"
+tap "int128/kubelogin", trusted: true
 # https://www.hashicorp.com/blog/announcing-hashicorp-homebrew-tap
-tap "hashicorp/tap"
+tap "hashicorp/tap", trusted:true
 # https://github.com/puppetlabs/homebrew-puppet
-tap "puppetlabs/puppet"
-tap "int128/kubelogin"
-tap "derailed/k9s"
-tap "chef/chef"
-tap "benwebber/tunnelblickctl"
+# tap "puppetlabs/puppet"
+tap "derailed/k9s",trusted:true
+#tap "benwebber/tunnelblickctl"
 # For dockle
-tap "goodwithtech/r"
+tap "goodwithtech/r", trusted:true
 tap "mike-engel/jwt-cli"
 # For Git -> Confluence Documentation
-tap "kovetskiy/mark"
+#tap "kovetskiy/mark"
 
 # Binaries
 # A GitHub Action Runner for local development
@@ -34,9 +30,8 @@ brew "ansible-lint"
 # CLI For ArgoCD
 brew "argocd"
 brew "asciiquarium"
-# Tool version Manager used for Elixir http://asdf-vm.com/guide/introduction.html#how-it-works
-# No longer supported (ie malware?)
-# brew "asdf"
+# Tool version Manager used for Ruby/Elixir/etc http://asdf-vm.com/guide/introduction.html#how-it-works
+brew "asdf"
 brew "awscli"
 brew "aws-sam-cli"
 brew "aws-vault"
@@ -59,8 +54,8 @@ brew "cmatrix"
 # Probably prefer npm install -g commitizen because brew is very old 2.x vs 4.x
 # git cz can be installed via npm install -g git-cz
 #brew "commitizen"
-brew "consul"
-brew "consul-template"
+#brew "consul"
+#brew "consul-template"
 # For things like realpath
 brew "coreutils"
 brew "curl"
@@ -90,7 +85,7 @@ brew "flake8"
 brew "ffmpeg"
 brew "fzf"
 brew "git"
-brew "git-credential-manager"
+cask "git-credential-manager"
 brew "git-lfs"
 brew "gnu-getopt"
 # Similar to htop but more details
@@ -129,7 +124,7 @@ brew "libheif"
 brew "maven"
 brew "make"
 # For Git -> Confluence Documentation
-brew "mark"
+#brew "mark"
 brew "minikube"
 # A super power paging program https://www.jedsoft.org/most/
 brew "most"
@@ -176,21 +171,20 @@ brew "tfenv"
 brew "the_silver_searcher"
 brew "tmux"
 # https://github.com/kubeshop/tracetest?tab=readme-ov-file
-brew "kubeshop/tracetest/tracetest"
+brew "tracetest"
 brew "tree"
 # License not opensource?
 #brew "unrar"
 brew "unnethack"
 brew "wireshark"
 # FAST Swagger linter for cli
-brew "install daveshanley/vacuum/vacuum"
+cask "daveshanley/vacuum/vacuum", trust:true
 brew "vim"
 # Versatile HTTP load tester 
 brew "vegeta"
 brew "watch"
 brew "wget"
 brew "yamllint"
-brew "youtube-dl"
 brew "zlib"
 brew "zsh"
 brew "zsh-completions"
@@ -200,16 +194,16 @@ brew "zsh-syntax-highlighting"
 cask "1password"
 cask "1password-cli"
 # Removes everything on uninstall of an app
-cask "apptrap"
+#cask "apptrap"
 # Great USB Imager
 cask "balenaetcher"
 # Don't let the mac fall asleep (clickable)
 cask "caffeine"
-cask "chef/chef/inspec"
+cask "chef/chef/inspec", trust:true
 # Ebook Organizer
 cask "calibre"
 # Amazon Java JDK https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/what-is-corretto-11.html
-cask "corretto11"
+#cask "corretto11"
 cask "cyberduck"
 # Database GUI
 cask "dbeaver-community"
@@ -220,13 +214,13 @@ cask "discord"
 cask "evernote"
 cask "firefox"
 # Best screen color changer (for day/night)
-cask "flux"
+cask "flux-app"
 # Excellent Git GUI
 cask "fork"
 # Terminal
 cask "ghostty"
 cask "google-chrome"
-cask "google-cloud-sdk"
+#cask "google-cloud-sdk"
 #cask "imagealpha"
 #cask "imageoptim"
 cask "inkscape"
@@ -240,7 +234,8 @@ cask "keybase"
 cask "lens"
 # Animated Screen Capture
 cask "licecap"
-cask "microsoft-teams"
+# Just no..
+# cask "microsoft-teams"
 # Like Charlesproxy but opensource https://mitmproxy.org
 cask "mitmproxy"
 # An opensource Redis Client GUI
@@ -272,7 +267,7 @@ cask "pocket-casts"
 cask "postman"
 # GUI Postgres Client (like dbeaver but lighter)
 cask "postico"
-cask "powershell"
+#cask "powershell"
 # SMS across devices
 cask "pulse-sms"
 # Python sytax highlighter
@@ -287,21 +282,21 @@ cask "react-proto"
 cask "signal"
 cask "slack"
 cask "spotify"
-cask "todoist"
+cask "todoist-app"
 cask "the-unarchiver"
 cask "thunderbird"
 #cask "transmission"
 # VPN GUI for OpenVPN
 #cask "tunnelblick"
 #cask "tunnelblickctl"
-cask "vagrant"
-cask "virtualbox"
+#cask "vagrant"
+#cask "virtualbox"
 # Open source version of Visual Studio Code
 #cask "vscodium"
 cask "visual-studio-code"
 cask "vlc"
 # This includes the GUI
-cask "wireshark"
+cask "wireshark-app"
 cask "xscreensaver"
 # OWASP Web App Scanner - Zed Attack Proxy
 cask "zap"
