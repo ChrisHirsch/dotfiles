@@ -154,7 +154,8 @@ brew "node"
 # NodeJS Version Manager
 brew "nvm"
 # LLM Cli 
-brew "ollama"
+# Install from ollama not brew otherwise Metal/GPU doesn't seem to work
+#brew "ollama"
 # Terraform replacement
 brew "opentofu"
 # https://github.com/vmware-tanzu/octant
