@@ -271,7 +271,7 @@ cask "postico"
 # SMS across devices
 cask "pulse-sms"
 # Python sytax highlighter
-cask "pygments"
+brew "pygments"
 # Rancher Desktop rancherdesktop.io is an alternative to Docker Desktop (and free)
 cask "rancher"
 # Replaced spectacle
