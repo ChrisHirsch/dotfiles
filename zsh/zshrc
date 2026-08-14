@@ -353,3 +353,11 @@ fpath=(${ASDF_DATA_DIR:-$HOME/.asdf}/completions $fpath)
 autoload -Uz compinit && compinit
 # To install nodejs plugin
 # asdf plugin add nodejs https://github.com/asdf-vm/asdf-nodejs.git
+
+# override the default config of MacOS: ~/Library/Application\ Support/lazygit/config.yml
+export XDG_CONFIG_HOME="$HOME/.config"
+
+# Because MS sucks so bad and wants all your personal data
+# Don't allow GitHub to track your cli usage
+export GH_TELEMETRY=false
+export DO_NOT_TRACK=true

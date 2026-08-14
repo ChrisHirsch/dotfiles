@@ -60,6 +60,7 @@ create_symlinks() {
   ln -sf ~/dotfiles/golang/golangci.yaml ~/.golangci.yaml
   ln -sf ~/dotfiles/postgresql/psqlrc ~/.psqlrc
   ln -sf ~/dotfiles/prettier/.prettierrc ~/.prettierrc
+  ln -sf ~/dotfiles/colima/colima.yaml ~/.colima/default/colima.yaml
 }
 
 tmux() {
@@ -256,7 +257,7 @@ gitinstall() {
   fi
 
 
-  logger "Updating meeting backgrounds submodule..."
+  logger "Updating meeting backgrounds and neovim submodules..."
   cd ~/dotfiles && git submodule update --init --recursive
 }
 
@@ -288,15 +289,35 @@ editors() {
       logger "Error! YouCompleteMe doesn't exist, but it should now that Plugins are installed. Try going into vim and running :PlugInstall"
       exit 1
     fi
-
   fi
 
+  if [ -L ~/.config/nvim ]; then
+    logger "NeoVim config already linked at ~/.config/nvim"
+  else
+    logger "NeoVim config linked to ~/.config/nvim"
+    ln -sf ~/dotfiles/nvim ~/.config/nvim
+  fi
 
   if [ ${machine} == 'Mac' ] ; then
     # Allow Key repeat for Visual Studio Code on a mac (for vim plugin)
     defaults write com.microsoft.VSCode ApplePressAndHoldEnabled -bool false
     # VSCodium
     # defaults write com.visualstudio.code.oss ApplePressAndHoldEnabled -bool false
+  fi
+  }
+
+
+colima() {
+  logger "Setting up Colima config..."
+  if [ ! -d ~/.colima/default ]; then
+    logger "Creating ~/.colima/default directory..."
+    mkdir -p ~/.colima/default
+  fi
+  if [ -L ~/.colima/default/colima.yaml ]; then
+    logger "Colima config already linked at ~/.colima/default/colima.yaml"
+  else
+    logger "Linking Colima config to ~/.colima/default/colima.yaml"
+    ln -sf ~/dotfiles/colima/colima.yaml ~/.colima/default/colima.yaml
   fi
 }
 
@@ -311,5 +332,6 @@ kubernetes
 tmux
 gitinstall
 editors
+colima
 #elixirinstall
 #Need to use https://github.com/deadc0de6/dotdrop

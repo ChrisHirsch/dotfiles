@@ -2,7 +2,9 @@
 # Taps
 tap "atombender/ktail", trusted:true
 #tap "chef/chef"
+tap "daveshanley/vacuum"
 tap "derailed/k9s", trusted: true
+tap "homebrew/bundle"
 # For installing multiple java versions https://medium.com/w-logs/installing-java-11-on-macos-with-homebrew-7f73c1e9fadf
 #tap "homebrew/cask-versions"
 tap "int128/kubelogin", trusted: true
@@ -17,6 +19,7 @@ tap "goodwithtech/r", trusted:true
 tap "mike-engel/jwt-cli"
 # For Git -> Confluence Documentation
 #tap "kovetskiy/mark"
+
 
 # Binaries
 # A GitHub Action Runner for local development
@@ -42,8 +45,12 @@ brew "bash"
 brew "bash-completion@2"
 # Best cat/more/less formatter
 brew "bat"
+# Bash test framework https://bats-core.readthedocs.io/en/stable/
+brew "bats"
 # https://rtyley.github.io/bfg-repo-cleaner/ (to remove secrets/big files from your git repo)
 brew "bfg"
+# Protobuf build tool and schema registry CLI
+brew "bufbuild/buf/buf"
 brew "cmake"
 # Cloud Formation Linter
 brew "cfn-lint"
@@ -58,11 +65,12 @@ brew "cmatrix"
 #brew "consul-template"
 # For things like realpath
 brew "coreutils"
+# Why just use tmux or ghostty when you can have it all?
+brew "cmux"
 brew "curl"
 #brew "elixir"
 #brew "dnsmasq", restart_service: true
-# A tool for exploring a docker image, layer contents, and discovering ways to shrink the size of your Docker/OCI image.
-# https://github.com/wagoodman/dive
+
 brew "dive"
 # https://github.com/goodwithtech/dockle
 # Contianer Image Linter
@@ -121,6 +129,14 @@ brew "kube-linter"
 brew "kustomize"
 # For heif-convert cli tool
 brew "libheif"
+# TUI for your for docker shenanigans. 
+brew "lazydocker"
+# TUI for your git work
+brew "lazygit"
+# Because why NOT have a TUI for makefiles
+brew "lazymake"
+# For Ruby on Rails with libpq
+brew "libpq"
 brew "maven"
 brew "make"
 # For Git -> Confluence Documentation
@@ -130,12 +146,16 @@ brew "minikube"
 brew "most"
 brew "mplayer"
 brew "newsboat"
+brew "neovim"
 brew "npm"
 brew "node"
 # NodeJS Version Manager
 brew "nvm"
 # LLM Cli 
-brew "ollama"
+# Install from ollama not brew otherwise Metal/GPU doesn't seem to work
+#brew "ollama"
+# Terraform replacement
+brew "opentofu"
 # https://github.com/vmware-tanzu/octant
 # Shows how applications run on k8s
 # Dead?
@@ -154,8 +174,12 @@ brew "pyenv-virtualenv"
 brew "qemu"
 # Remove PDF Passowrd
 brew "qpdf"
+# Python sytax highlighter
+brew "pygments"
 # CLI tool for working with CloudFormation https://github.com/aws-cloudformation/rain
 brew "rain"
+# Fast alternative to grep https://github.com/BurntSushi/ripgrep (needed for neovim telescope too)
+brew "ripgrep"
 brew "rename"
 brew "rust"
 # https://github.com/mozilla/sops manages secrets for helmfile
@@ -177,8 +201,6 @@ brew "tree"
 #brew "unrar"
 brew "unnethack"
 brew "wireshark"
-# FAST Swagger linter for cli
-cask "daveshanley/vacuum/vacuum", trust:true
 brew "vim"
 # Versatile HTTP load tester 
 brew "vegeta"
@@ -197,20 +219,25 @@ cask "1password-cli"
 #cask "apptrap"
 # Great USB Imager
 cask "balenaetcher"
+# A better? alternative to dbeaver with vim keybindings
+cask "beekeeper-studio"
+cask "bruno"
 # Don't let the mac fall asleep (clickable)
 cask "caffeine"
 cask "chef/chef/inspec", trust:true
 # Ebook Organizer
 cask "calibre"
 # Amazon Java JDK https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/what-is-corretto-11.html
-#cask "corretto11"
+#cask "corretto@11"
 cask "cyberduck"
 # Database GUI
 cask "dbeaver-community"
+# The best open source diagram program
+cask "drawio"
 cask "discord"
 # Not sure we really want this any more given that Docker wants a license for your desktop use
 # Try Rancher Desktop for an alternative
-# cask "docker"
+cask "docker"
 cask "evernote"
 cask "firefox"
 # Best screen color changer (for day/night)
@@ -219,8 +246,8 @@ cask "flux-app"
 cask "fork"
 # Terminal
 cask "ghostty"
+cask "gcloud-cli"
 cask "google-chrome"
-#cask "google-cloud-sdk"
 #cask "imagealpha"
 #cask "imageoptim"
 cask "inkscape"
@@ -236,6 +263,8 @@ cask "lens"
 cask "licecap"
 # Just no..
 # cask "microsoft-teams"
+# For working with latex
+cask "mactex"
 # Like Charlesproxy but opensource https://mitmproxy.org
 cask "mitmproxy"
 # An opensource Redis Client GUI
@@ -270,10 +299,8 @@ cask "postico"
 #cask "powershell"
 # SMS across devices
 cask "pulse-sms"
-# Python sytax highlighter
-cask "pygments"
 # Rancher Desktop rancherdesktop.io is an alternative to Docker Desktop (and free)
-cask "rancher"
+#cask "rancher"
 # Replaced spectacle
 cask "rectangle"
 # Quickly prototype react apps
@@ -289,6 +316,8 @@ cask "thunderbird"
 # VPN GUI for OpenVPN
 #cask "tunnelblick"
 #cask "tunnelblickctl"
+# FAST Swagger linter for cli
+cask "daveshanley/vacuum/vacuum", trust:true
 #cask "vagrant"
 #cask "virtualbox"
 # Open source version of Visual Studio Code
@@ -298,6 +327,8 @@ cask "vlc"
 # This includes the GUI
 cask "wireshark-app"
 cask "xscreensaver"
+# Comic CBZ reader
+cask "yacreader"
 # OWASP Web App Scanner - Zed Attack Proxy
 cask "zap"
 
