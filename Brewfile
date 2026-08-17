@@ -4,7 +4,6 @@ tap "atombender/ktail", trusted:true
 #tap "chef/chef"
 tap "daveshanley/vacuum"
 tap "derailed/k9s", trusted: true
-tap "homebrew/bundle"
 # For installing multiple java versions https://medium.com/w-logs/installing-java-11-on-macos-with-homebrew-7f73c1e9fadf
 #tap "homebrew/cask-versions"
 tap "int128/kubelogin", trusted: true
@@ -65,8 +64,6 @@ brew "cmatrix"
 #brew "consul-template"
 # For things like realpath
 brew "coreutils"
-# Why just use tmux or ghostty when you can have it all?
-brew "cmux"
 brew "curl"
 #brew "elixir"
 #brew "dnsmasq", restart_service: true
@@ -229,6 +226,8 @@ cask "chef/chef/inspec", trust:true
 cask "calibre"
 # Amazon Java JDK https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/what-is-corretto-11.html
 #cask "corretto@11"
+# Why just use tmux or ghostty when you can have it all?
+cask "cmux"
 cask "cyberduck"
 # Database GUI
 cask "dbeaver-community"
