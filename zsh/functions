@@ -1,16 +1,3 @@
-# Forwarding your .ssh/sshrc file and sourcing it as .bashrc
-# A function sudoi is defined on the remote machine, used
-# instead of sudo -i, to run a shell as the specified user,
-# or root as default, and source the local .ssh/sshrc.
-# From https://gist.github.com/dafta/26bec7ade1ca299926b5bc47064aeed0
-
-function ssh() {
-        tmprc=$(/usr/bin/ssh "$@" "mktemp" 2>/dev/null)
-        rsync ~/.ssh/sshrc "$1:$tmprc" >/dev/null 2>&1 
-        echo "function sudoi() { sudo -u \"\${1:-root}\" bash --rcfile \"$tmprc\"; }" | /usr/bin/ssh "$@" "cat - >> \"$tmprc\"" >/dev/null 2>&1
-        /usr/bin/ssh -t "$@" "chmod a+r \"$tmprc\"; bash --rcfile \"$tmprc\" ; rm \"$tmprc\""
-}
-
 # Backgrounds a echo null so we don't timeout on the shell
 function kexec() {
   k exec -ti $1 -- /bin/bash -c "while :; do sleep 10; echo -ne '\0' >&2; done & bash"
