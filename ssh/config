@@ -9,7 +9,7 @@ ForwardX11 yes
 ForwardX11Trusted yes
 KeepAlive yes
 ServerAliveInterval 120
-ServerAliveCountMax 120
+ServerAliveCountMax 3
 # For the slow host lookups disables ipv6
 AddressFamily inet
 #Tunnel yes
@@ -52,6 +52,3 @@ StrictHostKeyChecking no
 #ControlPath ~/.ssh/sockets/%C
 #ControlMaster auto
 #ControlPersist 600
-
-Match all
-Include bnn.config
