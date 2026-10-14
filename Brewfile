@@ -91,6 +91,9 @@ brew "ffmpeg"
 brew "fzf"
 brew "git"
 cask "git-credential-manager"
+# Rewrite git history across all branches - scrubbing PII/secrets or renaming paths
+# (successor to bfg/filter-branch)
+brew "git-filter-repo"
 brew "git-lfs"
 brew "gnu-getopt"
 # Similar to htop but more details
