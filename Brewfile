@@ -48,6 +48,8 @@ brew "bat"
 brew "bats"
 # https://rtyley.github.io/bfg-repo-cleaner/ (to remove secrets/big files from your git repo)
 brew "bfg"
+# Bruno API client CLI - https://www.usebruno.com/
+brew "bruno-cli"
 # Protobuf build tool and schema registry CLI
 brew "bufbuild/buf/buf"
 brew "cmake"
@@ -102,6 +104,8 @@ brew "glances"
 brew "gping"
 brew "helm"
 brew "helmfile"
+# agent manager 
+brew "herdr"
 brew "htop"
 # Network performance tool
 brew "iperf3"
