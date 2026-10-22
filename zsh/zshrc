@@ -110,7 +110,6 @@ plugins=(
   helm
   #history 
   iterm2
-  jira
   oc 
   macos
   mvn
