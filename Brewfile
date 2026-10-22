@@ -114,6 +114,9 @@ brew "jd"
 brew "jq"
 # Artifactory CLI
 brew "jfrog-cli"
+# Jira CLI — issue management, sprint view, comments without leaving the terminal
+# https://github.com/ankitpokhrel/jira-cli | setup: jira init
+brew "jira-cli"
 # Interactive json cli too https://pauljuliusmartinez.github.io/?ref=console.dev
 brew "jless"
 # JSON Web Tokens CLI Decoder/Encoder
