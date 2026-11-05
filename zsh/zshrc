@@ -135,6 +135,9 @@ plugins=(
 
 source $ZSH/oh-my-zsh.sh
 
+# The poetry plugin aliases pup to `poetry update`; pup is the Datadog CLI
+unalias pup 2>/dev/null
+
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 

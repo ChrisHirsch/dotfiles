@@ -1,0 +1,96 @@
+# AeroSpace tiling window manager config
+# Reference: https://nikitabobko.github.io/AeroSpace/guide
+#
+# Bindings mirror rectangle/RectangleConfig.json where AeroSpace has an
+# equivalent. Rectangle's thirds, quarters, and todo shortcuts (ctrl-alt +
+# d/f/g/e/t/u/i/j/k/b/n) have no tiling equivalent and are left unbound.
+
+start-at-login = true
+after-startup-command = []
+
+enable-normalization-flatten-containers = true
+enable-normalization-opposite-orientation-for-nested-containers = true
+
+accordion-padding = 30
+default-root-container-layout = 'tiles'
+default-root-container-orientation = 'auto'
+
+on-focused-monitor-changed = ['move-mouse monitor-lazy-center']
+automatically-unhide-macos-hidden-apps = false
+
+[key-mapping]
+preset = 'qwerty'
+
+# Rectangle gaps are all 0
+[gaps]
+inner.horizontal = 0
+inner.vertical = 0
+outer.left = 0
+outer.bottom = 0
+outer.top = 0
+outer.right = 0
+
+[mode.main.binding]
+# Workspaces (cmd-shift is avoided because cmd-shift-3/4/5 are screenshots)
+cmd-1 = 'workspace 1'
+cmd-2 = 'workspace 2'
+cmd-3 = 'workspace 3'
+cmd-4 = 'workspace 4'
+cmd-5 = 'workspace 5'
+cmd-6 = 'workspace 6'
+cmd-7 = 'workspace 7'
+cmd-8 = 'workspace 8'
+cmd-9 = 'workspace 9'
+
+alt-cmd-1 = 'move-node-to-workspace 1'
+alt-cmd-2 = 'move-node-to-workspace 2'
+alt-cmd-3 = 'move-node-to-workspace 3'
+alt-cmd-4 = 'move-node-to-workspace 4'
+alt-cmd-5 = 'move-node-to-workspace 5'
+alt-cmd-6 = 'move-node-to-workspace 6'
+alt-cmd-7 = 'move-node-to-workspace 7'
+alt-cmd-8 = 'move-node-to-workspace 8'
+alt-cmd-9 = 'move-node-to-workspace 9'
+
+# Rectangle halves: move the window within the tiling tree
+alt-cmd-left = 'move left'
+alt-cmd-right = 'move right'
+alt-cmd-up = 'move up'
+alt-cmd-down = 'move down'
+
+# Rectangle maximize
+alt-cmd-f = 'fullscreen'
+
+# Rectangle larger / smaller / restore / center
+ctrl-alt-equal = 'resize smart +50'
+ctrl-alt-minus = 'resize smart -50'
+ctrl-alt-backspace = 'balance-sizes'
+ctrl-alt-c = 'layout floating tiling'
+
+# Rectangle next / previous display
+ctrl-alt-cmd-right = 'move-node-to-monitor --wrap-around next'
+ctrl-alt-cmd-left = 'move-node-to-monitor --wrap-around prev'
+
+# Focus neighboring windows
+ctrl-alt-left = 'focus left'
+ctrl-alt-right = 'focus right'
+ctrl-alt-up = 'focus up'
+ctrl-alt-down = 'focus down'
+
+# Layouts
+alt-cmd-slash = 'layout tiles horizontal vertical'
+alt-cmd-comma = 'layout accordion horizontal vertical'
+
+alt-cmd-semicolon = 'mode service'
+
+# Press a key, then return to main mode
+[mode.service.binding]
+esc = ['reload-config', 'mode main']
+r = ['flatten-workspace-tree', 'mode main']
+f = ['layout floating tiling', 'mode main']
+backspace = ['close-all-windows-but-current', 'mode main']
+
+# Pin apps to workspaces, for example:
+# [[on-window-detected]]
+# if.app-id = 'com.google.Chrome'
+# run = 'move-node-to-workspace 1'

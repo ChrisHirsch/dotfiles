@@ -123,3 +123,28 @@ For the most part, git should be setup and ready to go from the installer. There
 ```
 
 This will override any more general config in ~/.gitconfig 
+
+### PR tracking
+
+`bin/pr-state-record`, `bin/pr-status`, and `bin/pr-state-hook` keep track of the pull requests you open, grouped by ticket.
+
+- `pr-state-record <pr-url> [--ticket ABC-1234] [--title "Ticket title"] [--desc "Row description"]` records a PR in `~/.local/state/pr/<TICKET>.md`, one file per ticket and one table row per PR. Re-running it for the same PR updates the row.
+- `pr-status` shows the review and merge status of every open PR, from one GitHub GraphQL query. Open PRs carry badges for draft, merge conflicts, behind base, CI failing or pending, and unresolved review threads. `--comments` lists each unresolved thread under its PR. `pr-status --all` includes merged and closed PRs, and `--since YYYY-MM-DD` includes those merged or closed on or after the date. `--markdown` prints "Merged / closed" and "Open" sections without colors, with the unresolved threads, for pasting into notes such as a standup. Each run refreshes the state files and moves a ticket's file to `~/.local/state/pr/archive/` once all its PRs are merged or closed and the newest one closed more than `PR_EXPIRE_DAYS` (default 14) days ago.
+- `pr-state-hook` is a Claude Code `PostToolUse` hook for Bash that records every PR created with `gh pr create`. Register it in `~/.claude/settings.json`:
+
+```json
+"hooks": {
+  "PostToolUse": [
+    { "matcher": "Bash", "hooks": [{ "type": "command", "command": "bash ~/.local/bin/pr-state-hook" }] }
+  ]
+}
+```
+
+Site-specific settings belong in `~/.site`, which `zshrc` sources:
+
+```bash
+export PR_TICKET_PATTERN='ABC-[0-9]+'             # ticket keys to detect in branch, title, and body
+export PR_JIRA_URL='https://example.atlassian.net' # adds a Jira link to each ticket file
+```
+
+Without `PR_TICKET_PATTERN`, PRs go to the `housekeeping` ticket unless you pass `--ticket`.

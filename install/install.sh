@@ -61,6 +61,11 @@ create_symlinks() {
   ln -sf ~/dotfiles/postgresql/psqlrc ~/.psqlrc
   ln -sf ~/dotfiles/prettier/.prettierrc ~/.prettierrc
   ln -sf ~/dotfiles/colima/colima.yaml ~/.colima/default/colima.yaml
+  mkdir -p ~/.cursor ~/.claude
+  ln -sfn ~/dotfiles/ai/rules ~/.cursor/rules
+  ln -sfn ~/dotfiles/ai/skills ~/.cursor/skills
+  ln -sfn ~/dotfiles/ai/skills ~/.claude/skills
+  ln -sf ~/dotfiles/ai/claude/CLAUDE.md ~/.claude/CLAUDE.md
 }
 
 tmux() {
@@ -322,6 +327,37 @@ colima() {
 }
 
 
+macos_settings() {
+  if [ ${machine} != 'Mac' ] ; then
+    return
+  fi
+
+  logger "Configuring Dock..."
+  ~/dotfiles/macos/dock.sh
+
+  ask "Use AeroSpace for window management instead of Rectangle and native desktops?"
+  if [ $? -eq 1 ]; then
+    logger "Configuring AeroSpace..."
+    ~/dotfiles/macos/aerospace.sh
+    logger "Configuring keyboard shortcuts..."
+    WINDOW_MANAGER=aerospace ~/dotfiles/macos/shortcuts.sh
+    return
+  fi
+
+  logger "Configuring keyboard shortcuts..."
+  ~/dotfiles/macos/shortcuts.sh
+
+  # Rectangle imports this file on its next launch
+  if [ ! -f ~/Library/Preferences/com.knollsoft.Rectangle.plist ]; then
+    logger "Staging Rectangle config for import..."
+    mkdir -p ~/Library/Application\ Support/Rectangle
+    cp ~/dotfiles/rectangle/RectangleConfig.json ~/Library/Application\ Support/Rectangle/RectangleConfig.json
+  else
+    logger "Rectangle already configured..."
+  fi
+}
+
+
 set_os_vars
 create_symlinks
 install_packages
@@ -333,5 +369,6 @@ tmux
 gitinstall
 editors
 colima
+macos_settings
 #elixirinstall
 #Need to use https://github.com/deadc0de6/dotdrop
