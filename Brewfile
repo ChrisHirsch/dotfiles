@@ -18,6 +18,7 @@ tap "goodwithtech/r", trusted:true
 tap "mike-engel/jwt-cli"
 # For Git -> Confluence Documentation
 #tap "kovetskiy/mark"
+tap "datadog-labs/pack"
 
 
 # Binaries
@@ -71,6 +72,8 @@ brew "curl"
 #brew "dnsmasq", restart_service: true
 
 brew "dive"
+# Dock layout for macos/dock.sh
+brew "dockutil"
 # https://github.com/goodwithtech/dockle
 # Contianer Image Linter
 brew "dockle"
@@ -183,6 +186,8 @@ brew "qemu"
 brew "qpdf"
 # Python sytax highlighter
 brew "pygments"
+# Datadog CLI
+brew "datadog-labs/pack/pup"
 # CLI tool for working with CloudFormation https://github.com/aws-cloudformation/rain
 brew "rain"
 # Fast alternative to grep https://github.com/BurntSushi/ripgrep (needed for neovim telescope too)
