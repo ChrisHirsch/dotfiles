@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+# pr-state-hook — Claude Code PostToolUse hook for Bash. When the command ran `gh pr create`,
+# records the new PR's URL (from the command's output) with pr-state-record.
+# Reads the hook payload as JSON on stdin. Prints a systemMessage when it records a PR.
+set -uo pipefail
+
+payload=$(cat)
+command=$(jq -r '.tool_input.command // ""' <<<"$payload")
+[[ "$command" == *"gh pr create"* ]] || exit 0
+
+output=$(jq -r '[.tool_response.stdout, .tool_response.output, (.tool_response | strings)] | map(select(. != null)) | join("\n")' <<<"$payload")
+url=$(grep -oE 'https://github\.com/[^/[:space:]]+/[^/[:space:]]+/pull/[0-9]+' <<<"$output" | tail -1)
+[[ -n "$url" ]] || exit 0
+
+if result=$("$HOME/.local/bin/pr-state-record" "$url" 2>&1); then
+  jq -n --arg m "$result" '{systemMessage: $m}'
+else
+  jq -n --arg m "pr-state-hook: could not record $url: $result" '{systemMessage: $m}'
+fi

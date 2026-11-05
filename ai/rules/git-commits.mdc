@@ -1,0 +1,24 @@
+---
+description: Git commit conventions — applies to all repos
+alwaysApply: true
+---
+
+# Git Commit Rules
+
+## Never run git commit
+Never run `git commit` yourself. Ever. Not even with --amend.
+
+## Workflow
+1. Stage files when the user says to stage
+2. After staging, propose a commit message
+3. Stop. The user runs the commit themselves.
+4. After the user says "pushed", read and follow the `update-pr` skill to offer creating or updating the PR.
+
+## Commit message style
+- Concise, factual, imperative mood
+- No filler phrases — say what changed
+- No trailing period
+
+## Never suggest or add
+- `Co-authored-by` trailers of any kind
+- `--author` flags referencing AI tools

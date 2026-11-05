@@ -1,0 +1,125 @@
+#!/usr/bin/env bash
+# pr-state-record — record or update a PR in its ticket's state file under ~/.local/state/pr/.
+#
+# Usage:
+#   pr-state-record <pr-url> [--ticket ABC-1234] [--title "Ticket title"] [--desc "Row description"]
+#                   [--json FILE]
+#
+# --json reads the PR's data from FILE instead of calling gh. FILE holds the object
+# `gh pr view --json title,headRefName,createdAt,state,closedAt,commits,body` prints.
+#
+# The ticket defaults to the first match of PR_TICKET_PATTERN (case-insensitive) in the PR's branch
+# name or title, then its body, and falls back to "housekeeping". The state file is
+# ~/.local/state/pr/<TICKET>.md: a header, an "updated" line, and one table row per PR, keyed by
+# repo and PR number. Re-running for the same PR updates its row in place. The closed column holds
+# the date the PR merged or closed, empty while it is open. pr-status reads these files.
+#
+# Environment (set site-specific values in ~/.site):
+#   PR_TICKET_PATTERN  extended regex for ticket keys, e.g. 'ABC-[0-9]+'; unset skips detection
+#   PR_JIRA_URL        Jira base URL, e.g. https://example.atlassian.net; adds a jira link to new files
+#   PR_STATE_DIR       state directory (default ~/.local/state/pr)
+set -euo pipefail
+
+STATE_DIR="${PR_STATE_DIR:-$HOME/.local/state/pr}"
+TICKET_PATTERN="${PR_TICKET_PATTERN:-}"
+JIRA_URL="${PR_JIRA_URL:-}"
+
+usage() { sed -n '2,20p' "$0" | sed 's/^# \{0,1\}//'; exit 1; }
+
+url="" ticket="" title="" desc="" json_file=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --ticket) ticket="$2"; shift 2 ;;
+    --title)  title="$2";  shift 2 ;;
+    --desc)   desc="$2";   shift 2 ;;
+    --json)   json_file="$2"; shift 2 ;;
+    -h|--help) usage ;;
+    *) [[ -z "$url" ]] && url="$1" || usage; shift ;;
+  esac
+done
+[[ -n "$url" ]] || usage
+
+if [[ ! "$url" =~ github\.com/([^/]+/[^/]+)/pull/([0-9]+) ]]; then
+  echo "pr-state-record: not a GitHub PR URL: $url" >&2
+  exit 1
+fi
+repo="${BASH_REMATCH[1]}"
+number="${BASH_REMATCH[2]}"
+
+if [[ -n "$json_file" ]]; then
+  json=$(<"$json_file")
+else
+  json=$(gh pr view "$number" --repo "$repo" \
+    --json title,headRefName,createdAt,state,closedAt,commits,body) || {
+    echo "pr-state-record: gh pr view failed for $repo#$number (check 'gh auth status')" >&2
+    exit 1
+  }
+fi
+pr_title=$(jq -r '.title' <<<"$json")
+branch=$(jq -r '.headRefName' <<<"$json")
+created=$(jq -r '.createdAt[0:10]' <<<"$json")
+pushed=$(jq -r '(.commits | last | .committedDate // "")[0:10]' <<<"$json")
+state=$(jq -r '.state' <<<"$json")
+closed=$(jq -r '(.closedAt // "")[0:10]' <<<"$json")
+body=$(jq -r '.body // ""' <<<"$json")
+
+if [[ -z "$ticket" && -n "$TICKET_PATTERN" ]]; then
+  ticket=$(grep -oiE "$TICKET_PATTERN" <<<"$branch $pr_title" | head -1 || true)
+  [[ -n "$ticket" ]] || ticket=$(grep -oiE "$TICKET_PATTERN" <<<"$body" | head -1 || true)
+fi
+[[ -n "$ticket" ]] || ticket="housekeeping"
+ticket=$(tr '[:lower:]' '[:upper:]' <<<"$ticket")
+[[ "$ticket" == "HOUSEKEEPING" ]] && ticket="housekeeping"
+
+desc=${desc//|//}
+
+mkdir -p "$STATE_DIR"
+file="$STATE_DIR/$ticket.md"
+now=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+TABLE_HEADER="| repo | pr | description | branch | created | pushed | last_status | closed |"
+TABLE_RULE="|---|---|---|---|---|---|---|---|"
+
+if [[ ! -f "$file" ]]; then
+  header="${title:-$pr_title}"
+  {
+    echo "# $ticket — $header"
+    echo ""
+    echo "- updated: $now"
+    [[ -n "$JIRA_URL" && "$ticket" != "housekeeping" ]] && echo "- jira: ${JIRA_URL%/}/browse/$ticket"
+    echo ""
+    echo "$TABLE_HEADER"
+    echo "$TABLE_RULE"
+  } >"$file"
+fi
+
+# keep an existing row's description unless --desc was given
+if [[ -z "$desc" ]]; then
+  desc=$(awk -F'|' -v repo="$repo" -v num="$number" '{
+    r = $2; p = $3; d = $4
+    gsub(/^ +| +$/, "", r); gsub(/^ +| +$/, "", p); gsub(/^ +| +$/, "", d)
+    if (r == repo && p == num) { print d; exit }
+  }' "$file")
+fi
+[[ -n "$desc" ]] || desc="${pr_title//|//}"
+row="| $repo | $number | $desc | $branch | $created | $pushed | $state | $closed |"
+tmp=$(mktemp)
+awk -v repo="$repo" -v num="$number" -v row="$row" -v now="$now" \
+    -v header="$TABLE_HEADER" -v rule="$TABLE_RULE" '
+  BEGIN { done = 0 }
+  /^- updated: / { print "- updated: " now; next }
+  /^\| repo \|/ { print header; next }
+  /^\|---/ { print rule; next }
+  {
+    n = split($0, f, "|")
+    if (n > 3) {
+      r = f[2]; p = f[3]
+      gsub(/^ +| +$/, "", r); gsub(/^ +| +$/, "", p)
+      if (r == repo && p == num) { print row; done = 1; next }
+    }
+    print
+  }
+  END { if (!done) print row }
+' "$file" >"$tmp"
+mv "$tmp" "$file"
+
+echo "pr-state-record: $repo#$number -> $file"

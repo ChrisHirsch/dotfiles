@@ -61,6 +61,11 @@ create_symlinks() {
   ln -sf ~/dotfiles/postgresql/psqlrc ~/.psqlrc
   ln -sf ~/dotfiles/prettier/.prettierrc ~/.prettierrc
   ln -sf ~/dotfiles/colima/colima.yaml ~/.colima/default/colima.yaml
+  mkdir -p ~/.cursor ~/.claude
+  ln -sfn ~/dotfiles/ai/rules ~/.cursor/rules
+  ln -sfn ~/dotfiles/ai/skills ~/.cursor/skills
+  ln -sfn ~/dotfiles/ai/skills ~/.claude/skills
+  ln -sf ~/dotfiles/ai/claude/CLAUDE.md ~/.claude/CLAUDE.md
 }
 
 tmux() {

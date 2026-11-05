@@ -1,0 +1,293 @@
+#!/usr/bin/env bash
+# pr-status — show review, merge, CI, and feedback status for tracked PRs, grouped by ticket.
+#
+# PRs are tracked in ~/.local/state/pr/<TICKET>.md (written by ~/.local/bin/pr-state-record).
+# One GitHub GraphQL query fetches every tracked PR. Each run then refreshes every row's pushed
+# date, last status, and closed date in those files, and moves a ticket's file to archive/ once all
+# its PRs are merged or closed and the newest closed date is more than PR_EXPIRE_DAYS (default 14)
+# days ago.
+#
+# Open PRs carry badges for draft, merge conflicts, behind base, CI failing or pending, and
+# unresolved review threads.
+#
+# Usage: pr-status [--all] [--since YYYY-MM-DD] [--comments] [--markdown]
+#   (default)   open PRs only
+#   --all       also merged and closed PRs
+#   --since     also PRs merged or closed on or after the date
+#   --comments  list each unresolved review thread under its PR
+#   --markdown  markdown without colors, in "Merged / closed" and "Open" sections; implies --comments
+set -euo pipefail
+
+STATE_DIR="${PR_STATE_DIR:-$HOME/.local/state/pr}"
+RECORD="${PR_STATE_RECORD:-$HOME/.local/bin/pr-state-record}"
+EXPIRE_DAYS="${PR_EXPIRE_DAYS:-14}"
+
+usage() { sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 1; }
+
+SHOW_ALL=false
+MARKDOWN=false
+COMMENTS=false
+SINCE=""
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    --all) SHOW_ALL=true; shift ;;
+    --comments) COMMENTS=true; shift ;;
+    --markdown) MARKDOWN=true; COMMENTS=true; shift ;;
+    --since)
+      [[ "${2:-}" =~ ^[0-9]{4}-[0-9]{2}-[0-9]{2}$ ]] || usage
+      SINCE="$2"; shift 2 ;;
+    *) usage ;;
+  esac
+done
+
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+RED='\033[0;31m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+RESET='\033[0m'
+
+PR_FIELDS='
+  state isDraft reviewDecision mergeable mergeStateStatus url closedAt
+  title headRefName createdAt body
+  commits(last: 1) { nodes { commit { committedDate statusCheckRollup { state } } } }
+  reviewThreads(first: 100) {
+    nodes { isResolved isOutdated comments(first: 1) { nodes { author { login } path body url } } }
+  }'
+
+# pr_summary — reads a GraphQL pullRequest object on stdin and prints one line of fields separated
+# by the ASCII unit separator (\x1f), which keeps empty fields in place for read:
+# state, reviewDecision, mergeable, mergeStateStatus, isDraft, CI state, url, closed date,
+# unresolved thread count, outdated unresolved count. Then one line per unresolved thread:
+# author, path, outdated, first line of the comment (cut to 100 characters), comment url.
+pr_summary() {
+  jq -r '
+    def firstline: (split("\n") | map(gsub("^\\s+|\\s+$"; "") | gsub("\t"; " ")) | map(select(length > 0)) | .[0]) // "";
+    def cut: if length > 100 then .[0:100] + "…" else . end;
+    ([.reviewThreads.nodes[] | select(.isResolved | not)]) as $open
+    | ([.state, (.reviewDecision // ""), .mergeable, .mergeStateStatus, (.isDraft | tostring),
+        (.commits.nodes[0].commit.statusCheckRollup.state // ""), .url, ((.closedAt // "")[0:10]),
+        ($open | length | tostring), ([$open[] | select(.isOutdated)] | length | tostring)] | join("\u001f")),
+      ($open[] | .isOutdated as $o | .comments.nodes[0]
+        | [(.author.login // "ghost"), .path, ($o | tostring), (.body | firstline | cut), .url] | join("\u001f"))
+  '
+}
+
+# record_json — reads a GraphQL pullRequest object on stdin and prints it in the shape
+# pr-state-record --json expects.
+record_json() {
+  jq '{title, headRefName, createdAt, state, closedAt, body,
+       commits: [.commits.nodes[].commit | {committedDate}]}'
+}
+
+# render_pr NUMBER DESCRIPTION TICKET — reads pr_summary output on stdin and appends the PR's
+# status lines to $open_out or, when it is merged or closed, to $done_out. Skips merged and closed
+# PRs unless --all is set or they closed on or after --since.
+render_pr() {
+  local number="$1"
+  local description="$2"
+  local ticket="$3"
+
+  local state review_decision mergeable merge_state draft ci url closed unresolved outdated
+  IFS=$'\x1f' read -r state review_decision mergeable merge_state draft ci url closed unresolved outdated
+
+  local target="$open_out"
+  if [[ "$state" != "OPEN" ]]; then
+    target="$done_out"
+    if ! $SHOW_ALL && [[ -z "$SINCE" || "$closed" < "$SINCE" ]]; then
+      return
+    fi
+  fi
+
+  local badges=() blocking=false
+  if [[ "$state" == "OPEN" ]]; then
+    [[ "$draft" == "true" ]] && badges+=("draft")
+    [[ "$mergeable" == "CONFLICTING" ]] && { badges+=("conflicts"); blocking=true; }
+    [[ "$merge_state" == "BEHIND" ]] && badges+=("behind base")
+    case "$ci" in
+      FAILURE|ERROR) badges+=("CI failing"); blocking=true ;;
+      PENDING|EXPECTED) badges+=("CI pending") ;;
+    esac
+    if (( unresolved > 0 )); then
+      if (( outdated > 0 )); then
+        badges+=("$unresolved unresolved ($outdated outdated)")
+      else
+        badges+=("$unresolved unresolved")
+      fi
+    fi
+  fi
+
+  local icon label color
+  if [[ "$state" == "MERGED" ]]; then
+    icon="✔" label="MERGED" color="$GREEN"
+  elif [[ "$state" == "CLOSED" ]]; then
+    icon="✗" label="CLOSED (not merged)" color="$RED"
+  elif [[ "$review_decision" == "CHANGES_REQUESTED" ]]; then
+    icon="✗" label="CHANGES REQUESTED" color="$RED"
+  elif [[ "$review_decision" == "APPROVED" ]] && $blocking; then
+    icon="~" label="APPROVED" color="$YELLOW"
+  elif [[ "$review_decision" == "APPROVED" ]]; then
+    icon="✔" label="APPROVED" color="$GREEN"
+  else
+    icon="?" label="AWAITING REVIEW" color="$YELLOW"
+  fi
+
+  local extra=""
+  (( ${#badges[@]} > 0 )) && extra=$(printf ' · %s' "${badges[@]}")
+
+  if $MARKDOWN; then
+    local when=""
+    [[ -n "$closed" ]] && when=" ${closed}"
+    echo "  - ${icon} **${label}**${extra}${when} [#${number}](${url}) ${description}" >>"$target"
+  else
+    [[ "$state" == "MERGED" ]] && label="MERGED ✅ [standup]"
+    printf "  %b %-6s %b  %-45s %b\n" \
+      "${color}${icon}${RESET}" "#${number}" "${color}${label}${RESET}${YELLOW}${extra}${RESET}" \
+      "$description" "${CYAN}${ticket}${RESET}" >>"$target"
+    echo -e "         ${url}" >>"$target"
+  fi
+
+  local author path is_outdated text comment_url mark
+  while IFS=$'\x1f' read -r author path is_outdated text comment_url; do
+    $COMMENTS || continue
+    mark=""
+    if $MARKDOWN; then
+      [[ "$is_outdated" == "true" ]] && mark=" _(outdated)_"
+      echo "    - ${author} on \`${path}\`${mark}: \"${text}\" ([comment](${comment_url}))" >>"$target"
+    else
+      [[ "$is_outdated" == "true" ]] && mark=" (outdated)"
+      echo -e "         ↳ ${author} ${path}${mark}: ${text}" >>"$target"
+      echo -e "           ${comment_url}" >>"$target"
+    fi
+  done
+}
+
+# rows FILE — prints "repo<TAB>number<TAB>description" for each PR row in a state file.
+rows() {
+  awk -F'|' 'NF > 8 && $2 ~ /\// {
+    for (i = 2; i <= 4; i++) gsub(/^ +| +$/, "", $i)
+    print $2 "\t" $3 "\t" $4
+  }' "$1"
+}
+
+# expired FILE — succeeds when every PR row is merged or closed with a closed date, and the
+# newest closed date is before the expiry cutoff.
+expired() {
+  awk -F'|' -v cutoff="$cutoff" '
+    NF > 9 && $2 ~ /\// {
+      s = $8; c = $9
+      gsub(/^ +| +$/, "", s); gsub(/^ +| +$/, "", c)
+      if (s == "OPEN" || c == "") { keep = 1 }
+      if (c > newest) { newest = c }
+      n++
+    }
+    END { exit (n > 0 && !keep && newest < cutoff) ? 0 : 1 }
+  ' "$1"
+}
+
+# ticket_heading FILE — prints the ticket heading: the file's header line, with the ticket key
+# linked to its jira URL in markdown mode.
+ticket_heading() {
+  local header jira key
+  header=$(head -1 "$1" | sed 's/^# //')
+  if ! $MARKDOWN; then
+    echo -e "${BOLD}━━━ ${header} ━━━━━━━━━━━━━━━━━━━━${RESET}"
+    return
+  fi
+  jira=$(sed -n 's/^- jira: //p' "$1")
+  key="${header%% — *}"
+  if [[ -n "$jira" ]]; then
+    echo "- [${key}](${jira}) — ${header#* — }"
+  else
+    echo "- ${header}"
+  fi
+}
+
+cutoff=$(date -v-"${EXPIRE_DAYS}"d +%Y-%m-%d 2>/dev/null || date -d "-${EXPIRE_DAYS} days" +%Y-%m-%d)
+
+shopt -s nullglob
+files=("$STATE_DIR"/*.md)
+if [[ ${#files[@]} -eq 0 ]]; then
+  echo "No tracked PRs in $STATE_DIR. Record one with: $RECORD <pr-url>"
+  exit 0
+fi
+
+open_out=$(mktemp)
+done_out=$(mktemp)
+open_all=$(mktemp)
+done_all=$(mktemp)
+data=$(mktemp)
+pr_json=$(mktemp)
+trap 'rm -f "$open_out" "$done_out" "$open_all" "$done_all" "$data" "$pr_json"' EXIT
+
+# one aliased pullRequest lookup per row, p0..pN in file and row order
+query="query {"
+i=0
+for file in "${files[@]}"; do
+  while IFS=$'\t' read -r repo number _; do
+    query+=" p$i: repository(owner: \"${repo%%/*}\", name: \"${repo#*/}\") { pullRequest(number: $number) { $PR_FIELDS } }"
+    i=$((i + 1))
+  done < <(rows "$file")
+done
+query+=" }"
+
+# a missing PR or repo is a partial error: keep the data for the rest
+gh api graphql -f query="$query" >"$data" 2>/dev/null || true
+if ! jq -e '.data' "$data" >/dev/null 2>&1; then
+  echo "pr-status: GitHub query failed (check 'gh auth status')" >&2
+  exit 1
+fi
+
+i=0
+for file in "${files[@]}"; do
+  ticket=$(basename "$file" .md)
+  : >"$open_out"
+  : >"$done_out"
+
+  while IFS=$'\t' read -r repo number description; do
+    if ! jq -e --arg k "p$i" '.data[$k].pullRequest' "$data" >"$pr_json" 2>/dev/null; then
+      if $MARKDOWN; then
+        echo "  - ✗ #${number} could not fetch (${repo})" >>"$open_out"
+      else
+        echo -e "  ${RED}✗${RESET} #${number} — could not fetch (${repo})" >>"$open_out"
+      fi
+      i=$((i + 1))
+      continue
+    fi
+    i=$((i + 1))
+
+    pr_summary <"$pr_json" | render_pr "$number" "$description" "$ticket"
+    # refresh the row (pushed date, last status, closed date) without changing its ticket or description
+    record_json <"$pr_json" >"$pr_json.record"
+    "$RECORD" "https://github.com/$repo/pull/$number" --ticket "$ticket" --desc "$description" \
+      --json "$pr_json.record" >/dev/null 2>&1 \
+      || echo "pr-status: state file not refreshed for $repo#$number" >&2
+    rm -f "$pr_json.record"
+  done < <(rows "$file")
+
+  if $MARKDOWN; then
+    [[ -s "$open_out" ]] && { ticket_heading "$file"; cat "$open_out"; } >>"$open_all"
+    [[ -s "$done_out" ]] && { ticket_heading "$file"; cat "$done_out"; } >>"$done_all"
+  elif [[ -s "$open_out" || -s "$done_out" ]]; then
+    echo ""
+    ticket_heading "$file"
+    cat "$done_out" "$open_out"
+  fi
+
+  if expired "$file"; then
+    mkdir -p "$STATE_DIR/archive"
+    mv "$file" "$STATE_DIR/archive/"
+  fi
+done
+
+if $MARKDOWN; then
+  if [[ -n "$SINCE" || "$SHOW_ALL" == true ]]; then
+    if [[ -n "$SINCE" ]]; then echo "#### Merged / closed since $SINCE"; else echo "#### Merged / closed"; fi
+    if [[ -s "$done_all" ]]; then cat "$done_all"; else echo "- _None_"; fi
+    echo ""
+  fi
+  echo "#### Open"
+  if [[ -s "$open_all" ]]; then cat "$open_all"; else echo "- _None_"; fi
+else
+  echo ""
+fi
