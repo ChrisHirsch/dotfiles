@@ -1,20 +1,49 @@
 # Global Instructions
 
 ## Git
-- Never run `git commit` (including `--amend`). Stage files only when asked, then propose a commit message and stop. The user commits.
-- Never add or suggest `Co-authored-by` trailers or `--author` flags referencing AI tools.
-- Commit messages: concise, factual, imperative mood, no trailing period, no filler.
+- Don't run `git commit` (including `--amend`) unless the repo's CLAUDE.md or CLAUDE.local.md says Claude may commit there. Otherwise stage files only when asked, then give the commit message as one paste-ready command and stop:
+  ```bash
+  git -C <abs repo path> commit -F - <<'EOF'
+  feat: 🎸 add jira-cli to Brewfile
+
+  Optional body
+  EOF
+  ```
+- In a repo that allows committing, show the message and wait for approval before each commit.
+- No AI attribution in commits or PR descriptions: no `Co-authored-by` trailers, no "Generated with" lines, no `--author` flags referencing AI tools.
+- Commit messages use Commitizen (git-cz) style: `<type>: <emoji> <subject>`. Types and emojis: `feat` 🎸, `fix` 🐛, `refactor` 💡, `docs` ✏️, `style` 💄, `test` 💍, `perf` ⚡️, `chore` 🤖, `ci` 🎡. Subject in lowercase imperative mood, no trailing period, no filler; at most a few lines of body.
 - When the user says "pushed", follow the `update-pr` skill: check for an existing PR and offer to create or update it. Always ask first.
 
 ## Workflow
-- Ask before making changes, and before moving on to the next step. One step at a time.
-- Use fully qualified absolute paths in shell commands, staying inside the project directory (for example `make -C <abs path>`, `go test -C <abs path>`, `git -C <abs path>`). Avoid `cd` and relative paths.
-- Prefer the project's Makefile targets (`make lint`, `make test`, `make {service}_lint`) over raw `go` / `golangci-lint` commands.
+- Use absolute paths in shell commands, staying inside the project directory. Prefer a tool's directory flag (`make -C <abs path>`, `go test -C <abs path>`, `git -C <abs path>`); when a tool has none, prefix with `cd <abs path> &&`.
+- Build, lint, test, clean, and dependency steps go through the project's own wrapper (Makefile, scripts), not the underlying tool directly. If the wrapper can't do something, propose a fix to it rather than working around it.
+- Never change anything outside the current repo without explicit permission. That includes `~/.claude` (memory, CLAUDE.md), other directories, and remote systems (deploys, pushes, APIs). The repo's Obsidian project folder (below) is the one standing exception.
+
+## Project notes (Obsidian)
+- Plans, prompts, notes, and proofs for a repo go in the Obsidian vault, not the repo. The vault is `$OBSIDIAN_VAULT` (default `~/Second Brain`).
+- The project folder and client for a repo come from the vault map imported in `~/.claude/CLAUDE.md`. When a repo has no entry, ask which folder to use and offer to add a row to the map.
+- A note that isn't about the current repo (a call, a personal note) doesn't follow the map: ask which folder it belongs in. The machine or repo says nothing about whose note it is.
+- Layout: `<project folder>/{plans,prompts,notes,proofs}/YYYY-MM-DD-<slug>.md`. Proofs are evidence: test output, screenshots, before/after captures.
+- Every file starts with this frontmatter:
+  ```yaml
+  ---
+  type: plan            # plan | prompt | note | proof
+  project: <repo name>
+  client: <client from the vault map, or personal>
+  repo: <abs repo path>
+  created: YYYY-MM-DD
+  tags: [claude, plan]  # second tag matches type
+  ---
+  ```
+
+## Scratch files
+- Throwaway files (one-off downloads, probes, intermediate output): system `/tmp`.
+- Verify checkouts and other working files that aren't project notes: `tmp/` at the project root, gitignored (add `/tmp/` to `.gitignore` before writing there).
+- If unsure where something belongs, ask.
 
 ## PR tracking
 - PRs are tracked per ticket in `~/.local/state/pr/` by `pr-state-record`. A hook records PRs from `gh pr create`. For a PR opened another way, or one that moves to another ticket or needs a better description, run `pr-state-record <url> [--ticket X] [--desc "..."]`. Never edit the state files by hand.
 - For PR status, run `pr-status` (open PRs) or `pr-status --all` instead of querying `gh` per PR.
-- Machine-specific notes, when present: @~/.claude/private.md
 
 ## Writing
-- Write code comments and docs as timeless facts about current behavior. Avoid "now", "used to be", "moved from X to Y", "no longer": the reader has no context for what changed.
+- Write commit messages, code comments, and docs as concise, timeless facts about current behavior. Avoid "now", "used to be", "moved from X to Y", "no longer", and references to plans or future work: the reader has no context for what changed.

@@ -1,7 +1,6 @@
 ---
 name: update-pr
 description: Create or update a GitHub PR after the user pushes a branch. Use when the user says "pushed" or asks to open, create, or update a pull request.
-disable-model-invocation: true
 ---
 
 # Create or Update PR
@@ -59,10 +58,13 @@ Separate multiple logical changes with `---`.
 
 ### Footer
 
-Always include a ticket link when one exists:
+Ticket settings on this machine (from `~/.site`): pattern !`echo "${PR_TICKET_PATTERN:-unset}"`, Jira URL !`echo "${PR_JIRA_URL:-unset}"`. A repo's CLAUDE.md can override either.
+
+When the branch name, title, or commits contain a key matching the pattern, end the body with:
 ```
-Relates to [SPOT-XXXXX](url)
+Relates to [<KEY>](<Jira URL>/browse/<KEY>)
 ```
+When the pattern is unset or nothing matches, leave the footer out.
 
 ## Style rules
 

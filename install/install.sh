@@ -61,11 +61,61 @@ create_symlinks() {
   ln -sf ~/dotfiles/postgresql/psqlrc ~/.psqlrc
   ln -sf ~/dotfiles/prettier/.prettierrc ~/.prettierrc
   ln -sf ~/dotfiles/colima/colima.yaml ~/.colima/default/colima.yaml
-  mkdir -p ~/.cursor ~/.claude
+  mkdir -p ~/.cursor
   ln -sfn ~/dotfiles/ai/rules ~/.cursor/rules
   ln -sfn ~/dotfiles/ai/skills ~/.cursor/skills
-  ln -sfn ~/dotfiles/ai/skills ~/.claude/skills
-  ln -sf ~/dotfiles/ai/claude/CLAUDE.md ~/.claude/CLAUDE.md
+  mkdir -p ~/.local/bin
+  for script in ~/dotfiles/bin/*; do
+    ln -sf "$script" ~/.local/bin/
+  done
+}
+
+# Appends an import of $1 to ~/.claude/CLAUDE.md unless it is already there
+claude_import() {
+  local line="@$1"
+  grep -qxF "$line" ~/.claude/CLAUDE.md 2>/dev/null \
+    || printf '\n%s\n' "$line" >> ~/.claude/CLAUDE.md
+}
+
+# Links each item in $1 into $2, keeping anything else already in $2
+link_items() {
+  local src=$1 dest=$2 item
+  [ -d "$src" ] || return 0
+  if [ -L "$dest" ]; then
+    logger "Skipping $src: $dest is a symlink to $(readlink "$dest")"
+    return 0
+  fi
+  mkdir -p "$dest"
+  for item in "$src"/*; do
+    [ -e "$item" ] || continue
+    ln -sfn "$item" "$dest/"
+  done
+}
+
+claude_config() {
+  logger "Setting up Claude Code config..."
+  mkdir -p ~/.claude
+
+  # Replace whole-file and whole-folder links from earlier installs
+  [ -L ~/.claude/CLAUDE.md ] && rm ~/.claude/CLAUDE.md
+  [ "$(readlink ~/.claude/skills)" = "$HOME/dotfiles/ai/skills" ] && rm ~/.claude/skills
+
+  claude_import '~/dotfiles/ai/claude/CLAUDE.md'
+  link_items ~/dotfiles/ai/skills ~/.claude/skills
+
+  # Private sources listed in CLAUDE_EXTRA_DIRS in ~/.site
+  local extra_dirs dir kind
+  extra_dirs=$(zsh -c 'source ~/.site 2>/dev/null; print -r -- $CLAUDE_EXTRA_DIRS' 2>/dev/null)
+  for dir in $extra_dirs; do
+    if [ ! -d "$dir" ]; then
+      logger "Skipping $dir: not found (clone it, then re-run)"
+      continue
+    fi
+    [ -f "$dir/claude/CLAUDE.md" ] && claude_import "$dir/claude/CLAUDE.md"
+    for kind in skills commands agents; do
+      link_items "$dir/$kind" ~/.claude/$kind
+    done
+  done
 }
 
 tmux() {
@@ -360,6 +410,7 @@ macos_settings() {
 
 set_os_vars
 create_symlinks
+claude_config
 install_packages
 add_aliases
 oh_my_zsh
