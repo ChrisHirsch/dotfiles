@@ -64,12 +64,15 @@ pr_summary() {
   jq -r '
     def firstline: (split("\n") | map(gsub("^\\s+|\\s+$"; "") | gsub("\t"; " ")) | map(select(length > 0)) | .[0]) // "";
     def cut: if length > 100 then .[0:100] + "…" else . end;
+    # comment fields come from anyone who can comment: drop C0/C1 control characters,
+    # which covers terminal escapes and the \x1f field separator
+    def clean: explode | map(select(. >= 32 and (. < 127 or . > 159))) | implode;
     ([.reviewThreads.nodes[] | select(.isResolved | not)]) as $open
     | ([.state, (.reviewDecision // ""), .mergeable, .mergeStateStatus, (.isDraft | tostring),
         (.commits.nodes[0].commit.statusCheckRollup.state // ""), .url, ((.closedAt // "")[0:10]),
         ($open | length | tostring), ([$open[] | select(.isOutdated)] | length | tostring)] | join("\u001f")),
       ($open[] | .isOutdated as $o | .comments.nodes[0]
-        | [(.author.login // "ghost"), .path, ($o | tostring), (.body | firstline | cut), .url] | join("\u001f"))
+        | [(.author.login // "ghost" | clean), (.path // "" | clean), ($o | tostring), (.body | firstline | clean | cut), (.url | clean)] | join("\u001f"))
   '
 }
 
@@ -144,7 +147,7 @@ render_pr() {
     printf "  %b %-6s %b  %-45s %b\n" \
       "${color}${icon}${RESET}" "#${number}" "${color}${label}${RESET}${YELLOW}${extra}${RESET}" \
       "$description" "${CYAN}${ticket}${RESET}" >>"$target"
-    echo -e "         ${url}" >>"$target"
+    printf '         %s\n' "$url" >>"$target"
   fi
 
   local author path is_outdated text comment_url mark
@@ -156,8 +159,8 @@ render_pr() {
       echo "    - ${author} on \`${path}\`${mark}: \"${text}\" ([comment](${comment_url}))" >>"$target"
     else
       [[ "$is_outdated" == "true" ]] && mark=" (outdated)"
-      echo -e "         ↳ ${author} ${path}${mark}: ${text}" >>"$target"
-      echo -e "           ${comment_url}" >>"$target"
+      printf '         ↳ %s %s%s: %s\n' "$author" "$path" "$mark" "$text" >>"$target"
+      printf '           %s\n' "$comment_url" >>"$target"
     fi
   done
 }
@@ -191,7 +194,7 @@ ticket_heading() {
   local header jira key
   header=$(head -1 "$1" | sed 's/^# //')
   if ! $MARKDOWN; then
-    echo -e "${BOLD}━━━ ${header} ━━━━━━━━━━━━━━━━━━━━${RESET}"
+    printf '%b━━━ %s ━━━━━━━━━━━━━━━━━━━━%b\n' "$BOLD" "$header" "$RESET"
     return
   fi
   jira=$(sed -n 's/^- jira: //p' "$1")
@@ -249,7 +252,7 @@ for file in "${files[@]}"; do
       if $MARKDOWN; then
         echo "  - ✗ #${number} could not fetch (${repo})" >>"$open_out"
       else
-        echo -e "  ${RED}✗${RESET} #${number} — could not fetch (${repo})" >>"$open_out"
+        printf '  %b✗%b #%s — could not fetch (%s)\n' "$RED" "$RESET" "$number" "$repo" >>"$open_out"
       fi
       i=$((i + 1))
       continue
