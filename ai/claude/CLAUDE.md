@@ -44,7 +44,7 @@
 - If unsure where something belongs, ask.
 
 ## PR tracking
-- PRs are tracked per ticket in `~/.local/state/pr/` by `pr-state-record`. A hook records PRs from `gh pr create`. For a PR opened another way, or one that moves to another ticket or needs a better description, run `pr-state-record <url> [--ticket X] [--desc "..."]`. Never edit the state files by hand.
+- PRs are tracked per ticket in `~/.local/state/pr/` by `pr-state-record`. After opening a PR, or when one moves to another ticket or needs a better description, run `pr-state-record <url> [--ticket X] [--desc "..."]`. Never edit the state files by hand.
 - For PR status, run `pr-status` (open PRs) or `pr-status --all` instead of querying `gh` per PR.
 
 ## Writing

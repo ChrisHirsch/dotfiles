@@ -26,11 +26,11 @@ After creating or updating a PR, make sure `pr-status` tracks it under the right
 pr-status --all | grep -F '<PR url>'
 ```
 
-- Not listed (opened in the browser, or some other way than `gh pr create`) → `pr-state-record <url> --ticket <KEY> --desc "<one-line summary>"`
+- Not listed → `pr-state-record <url> --ticket <KEY> --desc "<one-line summary>"`
 - Listed under the wrong ticket, or its description no longer matches the PR → `pr-state-record <url> [--ticket <KEY>] [--desc "..."]` with the fields to fix
 - Listed and correct → nothing to do
 
-The `gh pr create` hook records new PRs, so a PR created that way usually needs nothing. Never edit the state files by hand.
+Never edit the state files by hand.
 
 ## PR Body Structure
 
