@@ -1,8 +1,9 @@
 ---
 # CodeQL advanced setup. Default setup must stay off: the two conflict.
 # `actions` checks the workflows in .github/workflows (script injection,
-# untrusted checkouts, token permissions); `ruby` covers the Brewfile.
-# Categories match default setup's (/language:<lang>) so results carry over.
+# untrusted checkouts, token permissions). Ruby is left out: the Brewfile is
+# the only Ruby, and the extractor doesn't read it, so the analysis fails.
+# The category matches default setup's, so its results carry over.
 name: CodeQL
 
 on:
@@ -27,7 +28,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        language: [actions, ruby]
+        language: [actions]
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
