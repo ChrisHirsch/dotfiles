@@ -54,6 +54,27 @@ jobs:
           # This will handover control about PR rejection to the GitHub side
           max-allowed-issues: 2147483647
 
+      # Codacy writes one run per tool with no category, and a tool can appear
+      # more than once; code scanning rejects runs that share a category.
+      # Give each run its own category (codacy/<tool>/, then -2, -3 for repeats)
+      # and percent-encode spaces in file URIs.
+      - name: Give each SARIF run its own category
+        run: |
+          jq '
+            reduce range(0; .runs | length) as $i (.;
+              (.runs[$i].tool.driver.name // "unknown") as $name
+              | ([.runs[:$i][] | select((.tool.driver.name // "unknown") == $name)] | length) as $seen
+              | .runs[$i].automationDetails = {
+                  id: ("codacy/"
+                    + ($name | ascii_downcase | sub(" \\(reported by codacy\\)$"; "") | gsub("[^a-z0-9]+"; "-"))
+                    + (if $seen > 0 then "-\($seen + 1)" else "" end)
+                    + "/")
+                })
+            | walk(if type == "object" and (.uri | type) == "string" then .uri |= gsub(" "; "%20") else . end)
+          ' results.sarif > results.categorized.sarif
+          mv results.categorized.sarif results.sarif
+          jq -r '.runs[] | "\(.automationDetails.id) \(.tool.driver.name): \(.results | length) results"' results.sarif
+
       # Upload the SARIF file generated in the previous step
       - name: Upload SARIF results file
         uses: github/codeql-action/upload-sarif@v4
