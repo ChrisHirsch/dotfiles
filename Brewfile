@@ -19,9 +19,12 @@ tap "mike-engel/jwt-cli"
 # For Git -> Confluence Documentation
 #tap "kovetskiy/mark"
 tap "datadog-labs/pack"
+tap "atlassian/homebrew-acli", trusted:true
 
 
 # Binaries
+# Atlassian/Jira cli
+brew "acli"
 # A GitHub Action Runner for local development
 brew "act"
 # A Github Action validator

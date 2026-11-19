@@ -18,6 +18,20 @@ gh pr view --json number,url,body 2>&1
 
 Always ask before acting. Never update silently.
 
+## Tracking
+
+After creating or updating a PR, make sure `pr-status` tracks it under the right ticket:
+
+```bash
+pr-status --all | grep -F '<PR url>'
+```
+
+- Not listed → `pr-state-record <url> --ticket <KEY> --desc "<one-line summary>"`
+- Listed under the wrong ticket, or its description no longer matches the PR → `pr-state-record <url> [--ticket <KEY>] [--desc "..."]` with the fields to fix
+- Listed and correct → nothing to do
+
+Never edit the state files by hand.
+
 ## PR Body Structure
 
 ### Required sections

@@ -2,3 +2,5 @@
 *.sw[op]
 CLAUDE.local.md
 **/.claude/settings.local.json
+# Project-root scratch space (see ai/claude/CLAUDE.md)
+/tmp/
