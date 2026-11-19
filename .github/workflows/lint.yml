@@ -63,17 +63,27 @@ jobs:
           while read -r t; do
             brew tap "$t" || echo "::error::tap \"$t\" failed to add"
           done < /tmp/taps.txt
+      - name: Show Homebrew version and third-party tap trust
+        run: |
+          brew --version
+          brew tap-info --installed --json |
+            jq -r '.[] | select(.official | not) | "\(.name) trusted=\(if has("trusted") then .trusted else "n/a" end)"'
       - name: Verify every brew/cask entry resolves to a real formula/cask
         run: |
           # Short-name lookup can miss formulas from a tap added moments ago
           # (name-resolution cache isn't warm yet), so fall back to checking
-          # every tapped repo explicitly by fully-qualified name.
+          # every tapped repo explicitly by fully-qualified name. On failure,
+          # print brew's error for the name as written, then the first line
+          # of each tap-qualified attempt.
           resolves() {
-            local kind=$1 name=$2
-            brew info "--$kind" "$name" >/dev/null 2>&1 && return 0
+            local kind=$1 name=$2 err t
+            err=$(brew info "--$kind" "$name" 2>&1 >/dev/null) && return 0
+            local errs="  $name: ${err//$'\n'/$'\n'    }"$'\n'
             while read -r t; do
-              brew info "--$kind" "$t/$name" >/dev/null 2>&1 && return 0
+              err=$(brew info "--$kind" "$t/$name" 2>&1 >/dev/null) && return 0
+              errs+="  $t/$name: ${err%%$'\n'*}"$'\n'
             done < /tmp/taps.txt
+            printf '%s' "$errs"
             return 1
           }
           fail=0
