@@ -100,6 +100,8 @@ claude_config() {
   [ -L ~/.claude/CLAUDE.md ] && rm ~/.claude/CLAUDE.md
   [ "$(readlink ~/.claude/skills)" = "$HOME/dotfiles/ai/skills" ] && rm ~/.claude/skills
 
+  # The import line keeps a literal ~ so it resolves on any machine
+  # shellcheck disable=SC2088
   claude_import '~/dotfiles/ai/claude/CLAUDE.md'
   link_items ~/dotfiles/ai/skills ~/.claude/skills
 
@@ -378,7 +380,7 @@ colima() {
 
 
 macos_settings() {
-  if [ ${machine} != 'Mac' ] ; then
+  if [ "${machine}" != 'Mac' ] ; then
     return
   fi
 
