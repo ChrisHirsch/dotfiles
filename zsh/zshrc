@@ -19,6 +19,7 @@ if [[ "$OSTYPE" == "darwin"* ]]; then
   fi
 fi
 export PATH="$PATH:$HOMEBREW_PREFIX/bin:/opt/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:/opt/X11/bin:/usr/local/git/bin:~/src/go/bin:/usr/local/bin:/sw/bin:/opt/puppetlabs/pdk/bin:~/bin:/usr/local/opt/openjdk/jre/bin"
+export PATH="$PATH:$HOME/.local/bin"
 
 export FZF_BASE=$HOMEBREW_PREFIX/opt/fzf
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
@@ -134,6 +135,9 @@ plugins=(
 
 
 source $ZSH/oh-my-zsh.sh
+
+# The poetry plugin aliases pup to `poetry update`; pup is the Datadog CLI
+unalias pup 2>/dev/null
 
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8

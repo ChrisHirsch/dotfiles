@@ -38,8 +38,7 @@
         tool = meld
 
 [core]
-        #excludesfile = /opt/boxen/config/git/gitignore
-	excludesfile = /opt/boxen/config/git/gitignore
+	excludesfile = ~/dotfiles/git/gitignore_global
 	editor = vim
 	pager = bat
 
