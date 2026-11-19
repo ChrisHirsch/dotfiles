@@ -15,14 +15,15 @@
 #   --all       also merged and closed PRs
 #   --since     also PRs merged or closed on or after the date
 #   --comments  list each unresolved review thread under its PR
-#   --markdown  markdown without colors, in "Merged / closed" and "Open" sections; implies --comments
+#   --markdown  markdown without colors, in "Merged / closed" and "Open" sections, with ticket keys
+#               as [[wikilinks]]; implies --comments
 set -euo pipefail
 
 STATE_DIR="${PR_STATE_DIR:-$HOME/.local/state/pr}"
 RECORD="${PR_STATE_RECORD:-$HOME/.local/bin/pr-state-record}"
 EXPIRE_DAYS="${PR_EXPIRE_DAYS:-14}"
 
-usage() { sed -n '2,18p' "$0" | sed 's/^# \{0,1\}//'; exit 1; }
+usage() { sed -n '2,19p' "$0" | sed 's/^# \{0,1\}//'; exit 1; }
 
 SHOW_ALL=false
 MARKDOWN=false
@@ -188,8 +189,9 @@ expired() {
   ' "$1"
 }
 
-# ticket_heading FILE — prints the ticket heading: the file's header line, with the ticket key
-# linked to its jira URL in markdown mode.
+# ticket_heading FILE — prints the ticket heading: the file's header line. In markdown mode a key
+# matching PR_TICKET_PATTERN is an Obsidian [[wikilink]] to the ticket's note, followed by its jira
+# link.
 ticket_heading() {
   local header jira key
   header=$(head -1 "$1" | sed 's/^# //')
@@ -199,7 +201,13 @@ ticket_heading() {
   fi
   jira=$(sed -n 's/^- jira: //p' "$1")
   key="${header%% — *}"
-  if [[ -n "$jira" ]]; then
+  if [[ -n "${PR_TICKET_PATTERN:-}" ]] && grep -qxiE "$PR_TICKET_PATTERN" <<<"$key"; then
+    if [[ -n "$jira" ]]; then
+      echo "- [[${key}]] ([Jira](${jira})) — ${header#* — }"
+    else
+      echo "- [[${key}]] — ${header#* — }"
+    fi
+  elif [[ -n "$jira" ]]; then
     echo "- [${key}](${jira}) — ${header#* — }"
   else
     echo "- ${header}"

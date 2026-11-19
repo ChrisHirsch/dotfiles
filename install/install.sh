@@ -105,9 +105,12 @@ claude_config() {
   claude_import '~/dotfiles/ai/claude/CLAUDE.md'
   link_items ~/dotfiles/ai/skills ~/.claude/skills
 
-  # Private sources listed in CLAUDE_EXTRA_DIRS in ~/.site
+  # Private sources listed in CLAUDE_EXTRA_DIRS in ~/.site. Setting it to "" opts out.
   local extra_dirs dir kind
-  extra_dirs=$(zsh -c 'source ~/.site 2>/dev/null; print -r -- $CLAUDE_EXTRA_DIRS' 2>/dev/null)
+  if ! extra_dirs=$(zsh -c 'source ~/.site 2>/dev/null; (( ${+CLAUDE_EXTRA_DIRS} )) || exit 1; print -r -- $CLAUDE_EXTRA_DIRS' 2>/dev/null); then
+    logger "WARNING: CLAUDE_EXTRA_DIRS is not set in ~/.site, so no private Claude config (vault map) is imported."
+    logger "Clone ai-private and set CLAUDE_EXTRA_DIRS to its path, or set it to \"\" to skip, then re-run."
+  fi
   for dir in $extra_dirs; do
     if [ ! -d "$dir" ]; then
       logger "Skipping $dir: not found (clone it, then re-run)"

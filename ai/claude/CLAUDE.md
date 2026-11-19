@@ -15,13 +15,15 @@
 - When the user says "pushed", follow the `update-pr` skill: check for an existing PR and offer to create or update it. Always ask first.
 
 ## Workflow
+- Work one step at a time: agree on a step, make its changes, then stop and ask before starting the next.
 - Use absolute paths in shell commands, staying inside the project directory. Prefer a tool's directory flag (`make -C <abs path>`, `go test -C <abs path>`, `git -C <abs path>`); when a tool has none, prefix with `cd <abs path> &&`.
-- Build, lint, test, clean, and dependency steps go through the project's own wrapper (Makefile, scripts), not the underlying tool directly. If the wrapper can't do something, propose a fix to it rather than working around it.
+- When the project has a wrapper (Makefile, scripts), build, lint, test, clean, and dependency steps go through it, not the underlying tool directly. If the wrapper can't do something, propose a fix to it rather than working around it.
+- `cp`, `mv`, and `rm` are aliased to prompt first (`-i`). In shell commands an unanswered prompt skips the operation: a copy reports "not overwritten" and later steps run on an empty or stale file, and `rm` leaves the file in place. Use `command cp -f` / `command mv -f` / `command rm` or `cat src > dst`, check the result before writing over or deleting an original, and back up tracked files with `git show HEAD:<path>`. Scripts run as `bash script.sh` don't load the aliases.
 - Never change anything outside the current repo without explicit permission. That includes `~/.claude` (memory, CLAUDE.md), other directories, and remote systems (deploys, pushes, APIs). The repo's Obsidian project folder (below) is the one standing exception.
 
 ## Project notes (Obsidian)
-- Plans, prompts, notes, and proofs for a repo go in the Obsidian vault, not the repo. The vault is `$OBSIDIAN_VAULT` (default `~/Second Brain`).
-- The project folder and client for a repo come from the vault map imported in `~/.claude/CLAUDE.md`. When a repo has no entry, ask which folder to use and offer to add a row to the map.
+- Plans, prompts, notes, and proofs for a repo go in the Obsidian vault, not the repo. The vault is `$OBSIDIAN_VAULT` (default `~/obsidian/Second Brain`).
+- The project folder and company for a repo come from the vault map imported in `~/.claude/CLAUDE.md`. When a repo has no entry, ask which folder to use and offer to add a row to the map.
 - A note that isn't about the current repo (a call, a personal note) doesn't follow the map: ask which folder it belongs in. The machine or repo says nothing about whose note it is.
 - Layout: `<project folder>/{plans,prompts,notes,proofs}/YYYY-MM-DD-<slug>.md`. Proofs are evidence: test output, screenshots, before/after captures.
 - Every file starts with this frontmatter:
@@ -29,7 +31,7 @@
   ---
   type: plan            # plan | prompt | note | proof
   project: <repo name>
-  client: <client from the vault map, or personal>
+  company: <company from the vault map, or personal>
   repo: <abs repo path>
   created: YYYY-MM-DD
   tags: [claude, plan]  # second tag matches type
@@ -38,7 +40,7 @@
 
 ## Scratch files
 - Throwaway files (one-off downloads, probes, intermediate output): system `/tmp`.
-- Verify checkouts and other working files that aren't project notes: `tmp/` at the project root, gitignored (add `/tmp/` to `.gitignore` before writing there).
+- Verify checkouts and other working files that aren't project notes: `tmp/` at the project root. The global gitignore ignores it in every repo, so nothing needs adding to the repo's `.gitignore`.
 - If unsure where something belongs, ask.
 
 ## PR tracking

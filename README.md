@@ -49,6 +49,20 @@ cd dotfiles/install
 
 While running install and at iTerm, you SHOULD be asked to run `p10k configure`. Once here go to iTerm
 
+### Moving to a new Mac
+
+Some files hold settings for one machine and stay out of this repo. Before running the install script:
+
+1. Copy `~/.site` from the old Mac (see [Site settings](#site-settings-site)). It can hold tokens, so move it through a password manager, not a repo.
+2. Clone the private Claude config repo and list it in `CLAUDE_EXTRA_DIRS` (see [Claude Code](#claude-code)).
+
+During the install script, the macOS step:
+
+- rebuilds the Dock and sets the system keyboard shortcuts
+- asks whether to use AeroSpace. With AeroSpace, workspaces 1-9 are on Cmd-1..9 and the config is `aerospace/aerospace.toml`. Without it, the script waits while you add 9 desktops in Mission Control, sets Cmd-1..9 to switch between them, and stages the Rectangle config for import.
+
+Log out and back in afterwards so every setting takes effect.
+
 ### iTerm
 
 * Run p10k configure (if not already prompted)
@@ -129,7 +143,7 @@ This will override any more general config in ~/.gitconfig
 `bin/pr-state-record`, `bin/pr-status`, and `bin/pr-state-hook` keep track of the pull requests you open, grouped by ticket.
 
 - `pr-state-record <pr-url> [--ticket ABC-1234] [--title "Ticket title"] [--desc "Row description"]` records a PR in `~/.local/state/pr/<TICKET>.md`, one file per ticket and one table row per PR. Re-running it for the same PR updates the row.
-- `pr-status` shows the review and merge status of every open PR, from one GitHub GraphQL query. Open PRs carry badges for draft, merge conflicts, behind base, CI failing or pending, and unresolved review threads. `--comments` lists each unresolved thread under its PR. `pr-status --all` includes merged and closed PRs, and `--since YYYY-MM-DD` includes those merged or closed on or after the date. `--markdown` prints "Merged / closed" and "Open" sections without colors, with the unresolved threads, for pasting into notes such as a standup. Each run refreshes the state files and moves a ticket's file to `~/.local/state/pr/archive/` once all its PRs are merged or closed and the newest one closed more than `PR_EXPIRE_DAYS` (default 14) days ago.
+- `pr-status` shows the review and merge status of every open PR, from one GitHub GraphQL query. Open PRs carry badges for draft, merge conflicts, behind base, CI failing or pending, and unresolved review threads. `--comments` lists each unresolved thread under its PR. `pr-status --all` includes merged and closed PRs, and `--since YYYY-MM-DD` includes those merged or closed on or after the date. `--markdown` prints "Merged / closed" and "Open" sections without colors, with the unresolved threads, for pasting into notes such as a standup; ticket keys matching `PR_TICKET_PATTERN` become Obsidian `[[wikilinks]]`. Each run refreshes the state files and moves a ticket's file to `~/.local/state/pr/archive/` once all its PRs are merged or closed and the newest one closed more than `PR_EXPIRE_DAYS` (default 14) days ago.
 - `pr-state-hook` is a Claude Code `PostToolUse` hook for Bash that records every PR created with `gh pr create`. Register it in `~/.claude/settings.json`:
 
 ```json
@@ -140,11 +154,24 @@ This will override any more general config in ~/.gitconfig
 }
 ```
 
-Site-specific settings belong in `~/.site`, which `zshrc` sources:
+The ticket settings live in `~/.site` (see [Site settings](#site-settings-site)). Without `PR_TICKET_PATTERN`, PRs go to the `housekeeping` ticket unless you pass `--ticket`.
+
+### Claude Code
+
+The `claude_config` step of the install script sets up `~/.claude`:
+
+- `~/.claude/CLAUDE.md` is a local file on each machine. The installer adds an import of the shared rules in `ai/claude/CLAUDE.md`, plus one import for each private repo. Notes for one machine only can go directly in this file.
+- Each skill in `ai/skills/` is linked into `~/.claude/skills/`, alongside any skills already there.
+- Private config (the Obsidian vault map, company-specific workflows, private skills) lives in a private repo such as `ai-private`. List its path in `CLAUDE_EXTRA_DIRS`; the installer imports the repo's `claude/CLAUDE.md` and links its `skills/`, `commands/`, and `agents/`. It warns when `CLAUDE_EXTRA_DIRS` is unset; set it to `""` on a machine without private config.
+- The shared rules keep project plans, notes, and proofs in the Obsidian vault at `$OBSIDIAN_VAULT`, and working files in a `tmp/` folder at the project root, which `git/gitignore_global` ignores in every repo.
+
+### Site settings (`~/.site`)
+
+`zshrc` sources `~/.site` for settings that differ between machines:
 
 ```bash
-export PR_TICKET_PATTERN='ABC-[0-9]+'             # ticket keys to detect in branch, title, and body
-export PR_JIRA_URL='https://example.atlassian.net' # adds a Jira link to each ticket file
+export PR_TICKET_PATTERN='ABC-[0-9]+'                # ticket keys to detect in branch, title, and body
+export PR_JIRA_URL='https://example.atlassian.net'   # adds a Jira link to each ticket file
+export OBSIDIAN_VAULT="$HOME/obsidian/Second Brain"  # Obsidian vault for Claude project notes
+export CLAUDE_EXTRA_DIRS="$HOME/src/github/ai-private" # space-separated private Claude config repos
 ```
-
-Without `PR_TICKET_PATTERN`, PRs go to the `housekeeping` ticket unless you pass `--ticket`.
