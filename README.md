@@ -26,17 +26,17 @@ Run the eval command to get brew in your path
 eval "$(/opt/homebrew/bin/brew shellenv)"
 ```
 
-It's a bit of chicken and egg problem as the installer WILL install Brew but you want to be already running from iTerm.
+The installer also installs Brew, but install Ghostty first and run the installer from it, so `p10k configure` runs in the terminal you'll use.
 
-### Install iTerm
+### Install Ghostty
 
 ```bash
-brew install iterm2
+brew install --cask ghostty
 ```
 
 ### Install script
 
-While running iterm do the install script
+Run the install script from Ghostty
 
 ```bash
 # Clone this repo into your home directory
@@ -47,7 +47,7 @@ cd dotfiles/install
 ./install.sh
 ```
 
-While running install and at iTerm, you SHOULD be asked to run `p10k configure`. Once here go to iTerm
+The install script should ask you to run `p10k configure`.
 
 ### Moving to a new Mac
 
@@ -64,14 +64,12 @@ During the install script:
 
 Log out and back in afterwards so every setting takes effect.
 
-### iTerm
+### Ghostty
 
-* Run p10k configure (if not already prompted)
-* Select Install fonts
-* Quit all of iTerm as requested
-* Restart iTerm and if things don't quite look right, re-run the install.sh and/or p10k configure
+The config is `ghostty/config`, linked to `~/.config/ghostty/config`. Ghostty includes the Nerd Font symbols p10k uses, so no font install is needed.
 
-Make SURE that you're running iTerm2 when attempting to configure zsh and p10k otherwise nothing works!
+* Run `p10k configure` (if not already prompted)
+* If things don't look right, re-run install.sh and/or `p10k configure`
 
 ### ohmyzsh
 
@@ -85,7 +83,7 @@ You will need to run compaudit and note that there is a directory with incorrect
 compaudit | xargs chmod g-w
 ```
 
-and validate its working again by opening a new iTerm with no errors.
+and validate its working again by opening a new Ghostty window with no errors.
 
 ## Setting up Visual Studio Code
 
