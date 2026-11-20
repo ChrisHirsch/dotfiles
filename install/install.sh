@@ -361,6 +361,11 @@ kubernetes() {
   ../kubernetes/install.sh
 }
 
+submodules() {
+  logger "Updating meeting backgrounds and neovim submodules..."
+  git -C ~/dotfiles submodule update --init --recursive
+}
+
 gitinstall() {
   if [ ! -d /opt/homebrew/lib/node_modules/git-cz ] ; then
     logger "Setting up git commitizen..."
@@ -373,14 +378,10 @@ gitinstall() {
     logger "Setting up local git config..."
     read -p "Please enter your LOCAL (ie business) email address: " email
     logger "Using $email for ~/.gitconfig.user"
-    echo -e "[user]\n  email = ${email}\n"
+    printf '[user]\n  email = %s\n' "$email" > ~/.gitconfig.user
   else
     logger "Local Git config already installed..."
   fi
-
-
-  logger "Updating meeting backgrounds and neovim submodules..."
-  cd ~/dotfiles && git submodule update --init --recursive
 }
 
 elixirinstall() {
@@ -480,6 +481,7 @@ macos_settings() {
 
 set_os_vars
 create_symlinks
+submodules
 install_packages
 site_settings
 claude_config
