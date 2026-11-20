@@ -1,26 +1,23 @@
 # brew bundle --file ~/Brewfile
 # Taps
-tap "atombender/ktail", trusted:true
-#tap "chef/chef"
-tap "daveshanley/vacuum"
-tap "derailed/k9s", trusted: true
+# Homebrew only loads formulae and casks from third-party taps marked trusted
+tap "atlassian/homebrew-acli", trusted: true
+tap "atombender/ktail", trusted: true
+tap "bufbuild/buf", trusted: true
+tap "chef/chef", trusted: true
+tap "datadog-labs/pack", trusted: true
+tap "daveshanley/vacuum", trusted: true
+# For dockle
+tap "goodwithtech/r", trusted: true
+# https://www.hashicorp.com/blog/announcing-hashicorp-homebrew-tap
+tap "hashicorp/tap", trusted: true
 # For installing multiple java versions https://medium.com/w-logs/installing-java-11-on-macos-with-homebrew-7f73c1e9fadf
 #tap "homebrew/cask-versions"
-tap "int128/kubelogin", trusted: true
-# https://www.hashicorp.com/blog/announcing-hashicorp-homebrew-tap
-tap "hashicorp/tap", trusted:true
 # https://github.com/puppetlabs/homebrew-puppet
 # tap "puppetlabs/puppet"
-tap "derailed/k9s",trusted:true
 #tap "benwebber/tunnelblickctl"
-# For dockle
-tap "goodwithtech/r", trusted:true
-tap "mike-engel/jwt-cli"
 # For Git -> Confluence Documentation
 #tap "kovetskiy/mark"
-tap "datadog-labs/pack"
-tap "atlassian/homebrew-acli", trusted:true
-
 
 # Binaries
 # Atlassian/Jira cli
@@ -239,7 +236,7 @@ cask "beekeeper-studio"
 cask "bruno"
 # Don't let the mac fall asleep (clickable)
 cask "caffeine"
-cask "chef/chef/inspec", trust:true
+cask "chef/chef/inspec"
 # Ebook Organizer
 cask "calibre"
 # Amazon Java JDK https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/what-is-corretto-11.html
@@ -334,7 +331,7 @@ cask "thunderbird"
 #cask "tunnelblick"
 #cask "tunnelblickctl"
 # FAST Swagger linter for cli
-cask "daveshanley/vacuum/vacuum", trust:true
+cask "daveshanley/vacuum/vacuum"
 #cask "vagrant"
 #cask "virtualbox"
 # Open source version of Visual Studio Code
