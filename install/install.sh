@@ -46,6 +46,7 @@ logger() {
 create_symlinks() {
   logger "Setting shortcuts for dotfiles"
   mkdir -p ~/.config/yamllint
+  mkdir -p ~/.config/lazygit
   mkdir -p ~/.newsboat
   mkdir -p ~/.vagrant.d
   ln -sf ~/dotfiles/git/gitconfig ~/.gitconfig
@@ -61,6 +62,8 @@ create_symlinks() {
   ln -sf ~/dotfiles/postgresql/psqlrc ~/.psqlrc
   ln -sf ~/dotfiles/prettier/.prettierrc ~/.prettierrc
   ln -sf ~/dotfiles/colima/colima.yaml ~/.colima/default/colima.yaml
+  # lazygit reads $XDG_CONFIG_HOME, which zshrc sets to ~/.config
+  ln -sf ~/dotfiles/lazygit/config.yml ~/.config/lazygit/config.yml
   mkdir -p ~/.cursor
   ln -sfn ~/dotfiles/ai/rules ~/.cursor/rules
   ln -sfn ~/dotfiles/ai/skills ~/.cursor/skills
