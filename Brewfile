@@ -268,7 +268,6 @@ cask "google-chrome"
 #cask "imageoptim"
 cask "inkscape"
 cask "istat-menus"
-cask "iterm2"
 # Great copy and paste management tool
 cask "jumpcut"
 # The best encrypted chat

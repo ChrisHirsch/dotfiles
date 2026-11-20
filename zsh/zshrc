@@ -110,7 +110,6 @@ plugins=(
   golang
   helm
   #history 
-  iterm2
   oc 
   macos
   mvn

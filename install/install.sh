@@ -62,6 +62,8 @@ create_symlinks() {
   ln -sf ~/dotfiles/postgresql/psqlrc ~/.psqlrc
   ln -sf ~/dotfiles/prettier/.prettierrc ~/.prettierrc
   ln -sf ~/dotfiles/colima/colima.yaml ~/.colima/default/colima.yaml
+  mkdir -p ~/.config/ghostty
+  ln -sf ~/dotfiles/ghostty/config ~/.config/ghostty/config
   # lazygit reads $XDG_CONFIG_HOME, which zshrc sets to ~/.config
   ln -sf ~/dotfiles/lazygit/config.yml ~/.config/lazygit/config.yml
   mkdir -p ~/.cursor
@@ -190,7 +192,6 @@ claude_config() {
 
 tmux() {
   logger "Setting up tmux"
-  logger "Need to restore iterm2 for osx??"
   if [ ! -d ~/.tmux/plugins ]; then
     logger "Creating tmux plugins..."
     mkdir -p ~/.tmux/plugins
@@ -246,7 +247,6 @@ oh_my_zsh() {
     logger "Installing p10k configuration"
     ln -sf ~/dotfiles/zsh/p10k.zsh ~/.p10k.zsh
   fi
-  logger "Don't need to explicitly download fonts..just make sure to be using iterm2"
   logger "Run p10k configure to re-configure powerlevel"
 
   set +e
