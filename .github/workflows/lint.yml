@@ -73,6 +73,17 @@ jobs:
               echo "::error::tap \"$t\" failed to add"
             fi
           done < /tmp/taps.txt
+      - name: Verify every tap in use is trusted in the Brewfile
+        run: |
+          # brew bundle refuses entries from a tap without `tap "<tap>", trusted: true`
+          fail=0
+          while read -r t; do
+            grep -qxF "tap \"$t\", trusted: true" Brewfile || {
+              echo "::error::Brewfile needs: tap \"$t\", trusted: true"
+              fail=1
+            }
+          done < /tmp/taps.txt
+          exit $fail
       - name: Verify every brew/cask entry resolves to a real formula/cask
         run: |
           # Short-name lookup can miss formulas from a tap added moments ago
