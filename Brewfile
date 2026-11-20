@@ -6,7 +6,6 @@ tap "atombender/ktail", trusted: true
 tap "bufbuild/buf", trusted: true
 tap "chef/chef", trusted: true
 tap "datadog-labs/pack", trusted: true
-tap "daveshanley/vacuum", trusted: true
 # For dockle
 tap "goodwithtech/r", trusted: true
 # https://www.hashicorp.com/blog/announcing-hashicorp-homebrew-tap
@@ -84,6 +83,10 @@ brew "gofumpt"
 # Golang linter
 brew "golangci-lint"
 brew "gopls"
+# Container runtime (config in colima/colima.yaml) and the docker CLI that talks to it
+brew "colima"
+brew "docker"
+brew "docker-buildx"
 brew "docker-compose"
 brew "docker-credential-helper"
 # Practice your coding via exercism.io
@@ -212,6 +215,8 @@ brew "tree"
 # License not opensource?
 #brew "unrar"
 brew "unnethack"
+# FAST OpenAPI/Swagger linter for cli
+brew "vacuum"
 brew "wireshark"
 brew "vim"
 # Versatile HTTP load tester 
@@ -249,9 +254,6 @@ cask "dbeaver-community"
 # The best open source diagram program
 cask "drawio"
 cask "discord"
-# Not sure we really want this any more given that Docker wants a license for your desktop use
-# Try Rancher Desktop for an alternative
-cask "docker"
 cask "evernote"
 cask "firefox"
 # Best screen color changer (for day/night)
@@ -329,8 +331,6 @@ cask "thunderbird"
 # VPN GUI for OpenVPN
 #cask "tunnelblick"
 #cask "tunnelblickctl"
-# FAST Swagger linter for cli
-cask "daveshanley/vacuum/vacuum"
 #cask "vagrant"
 #cask "virtualbox"
 # Open source version of Visual Studio Code
