@@ -10,6 +10,7 @@
   EOF
   ```
 - In a repo that allows committing, show the message and wait for approval before each commit.
+- Stage with explicit paths (`git add <path>...`), never `git add -A`, `git add .`, or `git add -u`. This applies to staging commands suggested to the user too.
 - No AI attribution in commits or PR descriptions: no `Co-authored-by` trailers, no "Generated with" lines, no `--author` flags referencing AI tools.
 - Commit messages use Commitizen (git-cz) style: `<type>: <emoji> <subject>`. Types and emojis: `feat` 🎸, `fix` 🐛, `refactor` 💡, `docs` ✏️, `style` 💄, `test` 💍, `perf` ⚡️, `chore` 🤖, `ci` 🎡. Subject in lowercase imperative mood, no trailing period, no filler; at most a few lines of body.
 - When the user says "pushed", follow the `update-pr` skill: check for an existing PR and offer to create or update it. Always ask first.
