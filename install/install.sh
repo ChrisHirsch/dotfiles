@@ -455,6 +455,17 @@ colima() {
     logger "Linking Colima config to ~/.colima/default/colima.yaml"
     ln -sf ~/dotfiles/colima/colima.yaml ~/.colima/default/colima.yaml
   fi
+
+  # The docker CLI finds Homebrew's compose and buildx plugins through cliPluginsExtraDirs
+  local plugins config=~/.docker/config.json
+  plugins="$(brew --prefix)/lib/docker/cli-plugins"
+  mkdir -p ~/.docker
+  [ -s "$config" ] || echo '{}' > "$config"
+  if ! jq -e --arg d "$plugins" '(.cliPluginsExtraDirs // []) | index($d)' "$config" > /dev/null; then
+    logger "Adding $plugins to cliPluginsExtraDirs in $config"
+    jq --arg d "$plugins" '.cliPluginsExtraDirs = ((.cliPluginsExtraDirs // []) + [$d])' "$config" > "$config.tmp" \
+      && command mv -f "$config.tmp" "$config"
+  fi
 }
 
 
