@@ -95,6 +95,68 @@ link_items() {
   done
 }
 
+site_fail() {
+  logger "ERROR: $1"
+  logger "Fix it, then re-run ~/dotfiles/install/install.sh"
+  [ -n "$SITE_TMP" ] && command rm -f "$SITE_TMP"
+  exit 1
+}
+
+# Checks once that op can read the vault, signing in first if needed
+site_op_ready() {
+  local session
+  [ -n "$SITE_OP_OK" ] && return
+  command -v op > /dev/null || site_fail "1Password CLI (op) not found. Install it with brew bundle."
+  if ! op vault get "$SITE_OP_VAULT" > /dev/null 2>&1; then
+    logger "Signing in to 1Password..."
+    session=$(op signin) || site_fail "Can't sign in to 1Password. Turn on Settings > Developer > Integrate with 1Password CLI in the app, or add the account with: op account add"
+    eval "$session"
+    op vault get "$SITE_OP_VAULT" > /dev/null 2>&1 || site_fail "Signed in, but can't read 1Password vault '$SITE_OP_VAULT'."
+  fi
+  SITE_OP_OK=1
+}
+
+# Creates $2 from 1Password document $1, resolving its op:// references, unless $2 exists
+site_file() {
+  local doc=$1 dest=$2 template
+  if [ -e "$dest" ]; then
+    logger "WARNING: $dest already exists, not overwriting it. To refresh it from 1Password, move it aside and re-run."
+    return
+  fi
+  site_op_ready
+  logger "Creating $dest from '$doc' in vault '$SITE_OP_VAULT'..."
+  template=$(op document get "$doc" --vault "$SITE_OP_VAULT") || site_fail "Can't get document '$doc' from vault '$SITE_OP_VAULT'."
+  mkdir -p "$(dirname "$dest")"
+  SITE_TMP=$(mktemp "$dest.XXXXXX")
+  printf '%s\n' "$template" | op inject -f -o "$SITE_TMP" > /dev/null || site_fail "Can't resolve the op:// references in '$doc'."
+  chmod 600 "$SITE_TMP"
+  command mv -f "$SITE_TMP" "$dest"
+  SITE_TMP=
+}
+
+# Creates ~/.site, then each file listed in its SITE_FILES, from 1Password documents.
+# Override the vault and the default ~/.site document with SITE_OP_VAULT and SITE_OP_DOCUMENT.
+site_settings() {
+  local default_doc="${SITE_OP_DOCUMENT:-chris_site_macbook}"
+  local doc entry dest site_files
+  SITE_OP_VAULT="${SITE_OP_VAULT:-Clients}"
+
+  if [ -e ~/.site ]; then
+    logger "WARNING: ~/.site already exists, not overwriting it. To refresh it from 1Password, move it aside and re-run."
+  else
+    site_op_ready
+    read -p "1Password document for ~/.site [${default_doc}]: " -r doc
+    site_file "${doc:-$default_doc}" ~/.site
+  fi
+
+  # Entries are document:path, separated by spaces; a leading ~ in the path is $HOME
+  site_files=$(zsh -c 'source ~/.site 2>/dev/null; print -r -- $SITE_FILES' 2>/dev/null)
+  for entry in $site_files; do
+    dest=${entry#*:}
+    site_file "${entry%%:*}" "${dest/#\~/$HOME}"
+  done
+}
+
 claude_config() {
   logger "Setting up Claude Code config..."
   mkdir -p ~/.claude
@@ -391,6 +453,9 @@ macos_settings() {
     return
   fi
 
+  logger "Configuring macOS preferences..."
+  ~/dotfiles/macos/defaults.sh
+
   logger "Configuring Dock..."
   ~/dotfiles/macos/dock.sh
 
@@ -420,8 +485,9 @@ macos_settings() {
 set_os_vars
 create_symlinks
 submodules
-claude_config
 install_packages
+site_settings
+claude_config
 add_aliases
 oh_my_zsh
 ssh

@@ -53,12 +53,13 @@ While running install and at iTerm, you SHOULD be asked to run `p10k configure`.
 
 Some files hold settings for one machine and stay out of this repo. Before running the install script:
 
-1. Copy `~/.site` from the old Mac (see [Site settings](#site-settings-site)). It can hold tokens, so move it through a password manager, not a repo.
-2. Clone the private Claude config repo and list it in `CLAUDE_EXTRA_DIRS` (see [Claude Code](#claude-code)).
+1. Make sure the machine's site document exists in 1Password (see [Site settings](#site-settings-site)). The install script creates `~/.site` and the site's other files from it.
+2. Clone the private Claude config repo, and list it in `CLAUDE_EXTRA_DIRS` in the site document (see [Claude Code](#claude-code)).
 
-During the install script, the macOS step:
+During the install script:
 
-- rebuilds the Dock and sets the system keyboard shortcuts
+- after `brew bundle`, the script signs in to 1Password if needed (Touch ID with the app's CLI integration, or your password for an account added with `op account add`), then asks which site document to use
+- the macOS step shows hidden files in Finder, makes held keys repeat, rebuilds the Dock, and sets the system keyboard shortcuts
 - asks whether to use AeroSpace. With AeroSpace, workspaces 1-9 are on Cmd-1..9 and the config is `aerospace/aerospace.toml`. Without it, the script waits while you add 9 desktops in Mission Control, sets Cmd-1..9 to switch between them, and stages the Rectangle config for import.
 
 Log out and back in afterwards so every setting takes effect.
@@ -90,10 +91,7 @@ and validate its working again by opening a new iTerm with no errors.
 
 ### Repeating Keys on OSX
 
-To get repeating keys for vi mode:
-```bash
-defaults write -g ApplePressAndHoldEnabled 0
-```
+The macOS step of the install script turns off press-and-hold accents (`ApplePressAndHoldEnabled`) in `macos/defaults.sh`, so held keys repeat in vi mode.
 
 ### Enabling Sync
 
@@ -165,4 +163,32 @@ export PR_TICKET_PATTERN='ABC-[0-9]+'                # ticket keys to detect in 
 export PR_JIRA_URL='https://example.atlassian.net'   # adds a Jira link to each ticket file
 export OBSIDIAN_VAULT="$HOME/obsidian/Second Brain"  # Obsidian vault for Claude project notes
 export CLAUDE_EXTRA_DIRS="$HOME/src/github/ai-private" # space-separated private Claude config repos
+export SITE_FILES="acme_npmrc:~/.npmrc"              # other files to create from 1Password, see below
 ```
+
+#### Site documents in 1Password
+
+Each kind of machine has a site document in the `Clients` vault of 1Password, named owner first: `chris_site_macbook`, `chris_site_framework`, `acme_site`. Secrets are separate 1Password items named the same way (`acme_jfrog`), and documents refer to them with secret references instead of holding the values:
+
+```bash
+export GOPROXY="https://user:{{ op://Clients/acme_jfrog/credential }}@acme.jfrog.io/artifactory/api/go/go,direct"
+```
+
+To get a reference, open the item in the 1Password app and choose **Copy Secret Reference** from the field's menu.
+
+The `site_settings` step of the install script:
+
+1. Creates `~/.site` from the site document you choose (default `chris_site_macbook`), with each secret reference replaced by its value.
+2. Creates each file in the site's `SITE_FILES` the same way. Entries are `document:path`, separated by spaces, so document names can't contain spaces.
+
+It never overwrites an existing file; it warns and skips it. To refresh a file from 1Password, move it aside and re-run the script. Files are created with mode `600`. If `op` can't reach the vault or a reference doesn't resolve, the script stops; fix the problem and re-run it. `SITE_OP_VAULT` and `SITE_OP_DOCUMENT` override the vault and the default document.
+
+To create a document from a local file, replace its secrets with references, then:
+
+```bash
+op document create ~/site.tpl --title acme_site --vault Clients
+op document get acme_site --vault Clients | op inject > /dev/null && echo ok   # check the references resolve
+command rm ~/site.tpl
+```
+
+To change one: `op document get acme_site --vault Clients > ~/site.tpl`, edit the file, run `op document edit acme_site ~/site.tpl --vault Clients`, and delete the local copy.
