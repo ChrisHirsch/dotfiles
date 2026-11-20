@@ -1,10 +1,16 @@
-Include /Users/chirsch/.colima/ssh_config
+Include ~/.colima/ssh_config
 
+# Per-site host entries, created from 1Password by the install script (SITE_FILES)
+Include ~/.ssh/config.d/*
+# Entries for this machine only
 Include ~/.ssh/config.user
 
+# Keys come from the 1Password SSH agent when it's running. On macOS the
+# install script links ~/.1password/agent.sock to the app's socket.
+Match exec "test -S ~/.1password/agent.sock"
+IdentityAgent ~/.1password/agent.sock
+
 Host *
-AddKeysToAgent yes
-ForwardAgent yes
 ForwardX11 yes
 ForwardX11Trusted yes
 KeepAlive yes
@@ -17,23 +23,6 @@ AddressFamily inet
 Host localhost
 PubkeyAcceptedAlgorithms +ssh-rsa
 HostkeyAlgorithms +ssh-rsa
-
-# Aragorn is too old
-Host 10.69.0.107
-HostKeyAlgorithms +ssh-rsa
-PubkeyAcceptedKeyTypes +ssh-rsa
-
-# Disable strict key checking for the FRC RoboRio
-Host 10.32.0.2
-StrictHostKeyChecking no
-User lvuser
-# User admin for root
-
-# In an attempt to allow vnc to connect
-Host proxmox*.kiatek.com
-StrictHostKeyChecking no
-Host proxmox*
-StrictHostKeyChecking no
 
 # This just seems to cause more issues than speeding anything up.
 #Host *.amazonaws.com
