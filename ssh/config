@@ -11,8 +11,6 @@ Match exec "test -S ~/.1password/agent.sock"
 IdentityAgent ~/.1password/agent.sock
 
 Host *
-ForwardX11 yes
-ForwardX11Trusted yes
 KeepAlive yes
 ServerAliveInterval 120
 ServerAliveCountMax 3
