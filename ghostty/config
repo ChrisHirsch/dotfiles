@@ -1,2 +1,4 @@
+# Ghostty config, linked to ~/.config/ghostty/config
+# Options: https://ghostty.org/docs/config
 background = #000000
-scrollback-limit = 10000
+scrollback-limit-bytes = 100000000

@@ -64,8 +64,11 @@ create_symlinks() {
   ln -sf ~/dotfiles/colima/colima.yaml ~/.colima/default/colima.yaml
   mkdir -p ~/.config/ghostty
   ln -sf ~/dotfiles/ghostty/config ~/.config/ghostty/config
-  # lazygit reads $XDG_CONFIG_HOME, which zshrc sets to ~/.config
+  # lazygit, k9s, and herdr read $XDG_CONFIG_HOME, which zshrc sets to ~/.config
   ln -sf ~/dotfiles/lazygit/config.yml ~/.config/lazygit/config.yml
+  mkdir -p ~/.config/k9s ~/.config/herdr
+  ln -sf ~/dotfiles/k9s/aliases.yaml ~/.config/k9s/aliases.yaml
+  ln -sf ~/dotfiles/herdr/config.toml ~/.config/herdr/config.toml
   mkdir -p ~/.cursor
   ln -sfn ~/dotfiles/ai/rules ~/.cursor/rules
   ln -sfn ~/dotfiles/ai/skills ~/.cursor/skills
@@ -391,6 +394,13 @@ gitinstall() {
     printf '[user]\n  email = %s\n' "$email" > ~/.gitconfig.user
   else
     logger "Local Git config already installed..."
+  fi
+
+  # gh rewrites its config.yml, so set options instead of linking the file
+  if command -v gh > /dev/null; then
+    logger "Setting gh options..."
+    gh config set git_protocol https
+    gh alias set co 'pr checkout' --clobber > /dev/null
   fi
 }
 
