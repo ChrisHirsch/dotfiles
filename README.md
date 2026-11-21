@@ -190,3 +190,23 @@ command rm ~/site.tpl
 ```
 
 To change one: `op document get acme_site --vault Clients > ~/site.tpl`, edit the file, run `op document edit acme_site ~/site.tpl --vault Clients`, and delete the local copy.
+
+### SSH
+
+SSH keys live in 1Password as SSH Key items, named owner first (`acme_id_ed25519`), and the 1Password SSH agent offers them; private keys aren't kept in `~/.ssh`. Turn the agent on in the app under **Settings > Developer > Use the SSH agent**.
+
+`ssh/config` points `IdentityAgent` at `~/.1password/agent.sock` when that socket exists. That is the agent's socket on Linux; on macOS the `ssh` step of the install script links it to the app's socket. Agent forwarding is off; turn it on per host where it's needed.
+
+Each site adds its own pieces through `SITE_FILES`:
+
+- `~/.config/1Password/ssh/agent.toml` lists the keys the agent offers on that machine. Without it, the agent offers only keys in the Personal (Private) vault. Missing items are skipped silently.
+
+  ```toml
+  [[ssh-keys]]
+  item = "acme_id_ed25519"
+  vault = "Clients"
+  ```
+
+- Files in `~/.ssh/config.d/` hold host entries, one file per site (`acme_ssh_config:~/.ssh/config.d/acme`). `ssh/config` includes them all, so the public config holds no hosts.
+
+Check what the agent offers with `SSH_AUTH_SOCK=~/.1password/agent.sock ssh-add -l`, and which agent a host uses with `ssh -G <host> | grep identityagent`.

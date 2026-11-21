@@ -213,7 +213,14 @@ ssh() {
     mkdir -p ~/.ssh
   fi
   ln -sf ~/dotfiles/ssh/config ~/.ssh/config
-  mkdir -p ~/.ssh/sockets
+  mkdir -p ~/.ssh/sockets ~/.ssh/config.d
+
+  # ssh/config uses ~/.1password/agent.sock, the 1Password agent's socket on Linux.
+  # On macOS the app's socket path has a space in it, so link to it instead.
+  if [ "${machine}" == 'Mac' ]; then
+    mkdir -p ~/.1password
+    ln -sf ~/Library/Group\ Containers/2BUA8C4S2C.com.1password/t/agent.sock ~/.1password/agent.sock
+  fi
 }
 
 oh_my_zsh() {
