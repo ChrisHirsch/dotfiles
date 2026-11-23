@@ -1,3 +1,7 @@
+# macOS keeps key passphrases in the login keychain; other systems ignore the option
+IgnoreUnknown UseKeychain
+UseKeychain yes
+
 Include ~/.colima/ssh_config
 
 # Per-site host entries, created from 1Password by the install script (SITE_FILES)
