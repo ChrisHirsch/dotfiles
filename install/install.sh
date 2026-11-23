@@ -286,6 +286,41 @@ oh_my_zsh() {
   fi
 }
 
+# Put an installed but not yet on PATH brew on PATH (Apple silicon, then Intel)
+brew_shellenv() {
+  command -v brew > /dev/null && return
+  local b
+  for b in /opt/homebrew/bin/brew /usr/local/bin/brew; do
+    if [ -x "$b" ]; then
+      eval "$("$b" shellenv)"
+      return
+    fi
+  done
+}
+
+# Download the official Homebrew installer and run it only if the user agrees
+install_homebrew() {
+  local url=https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh
+  local script
+  script=$(mktemp -t homebrew-install) || return 1
+  logger "Homebrew not found. Downloading its installer from $url"
+  if ! curl -fsSL "$url" -o "$script"; then
+    logger "Could not download the Homebrew installer"
+    command rm -f "$script"
+    return 1
+  fi
+  logger "Installer saved to $script"
+  if ask "Run the Homebrew installer now?"; then
+    logger "Skipping Homebrew and brew packages. Install it from https://brew.sh and re-run the installer"
+    command rm -f "$script"
+    return 1
+  fi
+  /bin/bash "$script"
+  local rc=$?
+  command rm -f "$script"
+  return $rc
+}
+
 install_mac_packages() {
 
   if [ ! -n "$(command -v gcc)" ]  ; then
@@ -295,9 +330,10 @@ install_mac_packages() {
     logger "OSX Dev Tools (including git) already installed..."
   fi
 
-  if [ ! -n "$(command -v fzf)" ]  ; then
-    logger "Installing Homebrew..."
-    /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"
+  brew_shellenv
+  if ! command -v brew > /dev/null; then
+    install_homebrew || return 1
+    brew_shellenv
   fi
   brew analytics off
   ln -sf ~/dotfiles/Brewfile ~/Brewfile
