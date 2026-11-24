@@ -118,15 +118,39 @@ link_items() {
 site_fail() {
   logger "ERROR: $1"
   logger "Fix it, then re-run ~/dotfiles/install/install.sh"
+  logger "To use brew and op in this terminal before then: eval \"\$($(brew --prefix 2>/dev/null || echo /opt/homebrew)/bin/brew shellenv)\""
   [ -n "$SITE_TMP" ] && command rm -f "$SITE_TMP"
   exit 1
 }
 
 # Checks once that op can read the vault, signing in first if needed
+# With more than one 1Password account, asks which holds the vault and exports
+# OP_ACCOUNT for the rest of the run
+site_op_account() {
+  local accounts n i choice
+  [ -n "$OP_ACCOUNT" ] && return
+  accounts=$(op account list --format=json 2>/dev/null | jq -r '.[] | "\(.account_uuid)\t\(.url)\t\(.email)"')
+  n=$(grep -c . <<< "$accounts")
+  [ "$n" -gt 1 ] || return 0
+  echo "1Password accounts:"
+  i=0
+  while IFS=$'\t' read -r _ url email; do
+    i=$((i + 1))
+    printf '  %d) %s  %s\n' "$i" "$url" "$email"
+  done <<< "$accounts"
+  while true; do
+    read -p "Which account has the '$SITE_OP_VAULT' vault? [1-$n] " -r choice
+    [[ $choice =~ ^[0-9]+$ ]] && [ "$choice" -ge 1 ] && [ "$choice" -le "$n" ] && break
+  done
+  OP_ACCOUNT=$(sed -n "${choice}p" <<< "$accounts" | cut -f1)
+  export OP_ACCOUNT
+}
+
 site_op_ready() {
   local session
   [ -n "$SITE_OP_OK" ] && return
   command -v op > /dev/null || site_fail "1Password CLI (op) not found. Install it with: brew install --cask 1password-cli"
+  site_op_account
   if ! op vault get "$SITE_OP_VAULT" > /dev/null 2>&1; then
     logger "Signing in to 1Password..."
     session=$(op signin) || site_fail "Can't sign in to 1Password. Turn on Settings > Developer > Integrate with 1Password CLI in the app, or add the account with: op account add"
@@ -606,5 +630,6 @@ gitinstall
 editors
 colima
 macos_settings
+logger "Done. Open a new terminal so brew, op, and the zsh config are loaded."
 #elixirinstall
 #Need to use https://github.com/deadc0de6/dotdrop
