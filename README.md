@@ -66,6 +66,28 @@ During the install script:
 
 Log out and back in afterwards so every setting takes effect.
 
+### Handing a Mac back
+
+`install/uninstall.sh` removes your personal accounts, credentials, and data before you return a Mac. Company-managed things stay as they are: MDM profiles, system logs, and work apps it doesn't list.
+
+```bash
+~/dotfiles/install/uninstall.sh            # dry run: changes nothing
+~/dotfiles/install/uninstall.sh --remove   # asks before each group
+```
+
+It runs in three steps:
+
+1. A checklist of things to sign out of or revoke by hand, since deleting files doesn't unlink them: Apple ID, Internet Accounts, Keybase, Signal, Slack, Tailscale, CLI logins, and 1Password last.
+2. Backup checks, which change nothing:
+   - SSH keys that aren't in 1Password
+   - GPG secret keys, with the commands to export them to 1Password
+   - an Obsidian vault with unpushed changes
+   - git repos with work that exists only on this Mac
+   - personal files in Downloads, Desktop, Documents, and Pictures
+3. Removal, one group at a time: messaging apps, Keybase, browsers, personal apps, the Obsidian vault, SSH keys, GPG, credentials and site files, `~/src`, Claude and other AI tools, shell history, your folders, and 1Password. Homebrew apps are removed with `brew uninstall --zap`. Every prompt defaults to no.
+
+The app lists are at the top of the script. Messages, Safari, and 1Password's data are protected by macOS, so removing them needs Full Disk Access for your terminal.
+
 ### Ghostty
 
 The config is `ghostty/config`, linked to `~/.config/ghostty/config`. Ghostty includes the Nerd Font symbols p10k uses, so no font install is needed.
