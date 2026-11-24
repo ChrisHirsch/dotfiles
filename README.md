@@ -114,7 +114,7 @@ To enable the built in Settings Sync, click on the Gear in the lower left, Backu
 
 ### Git
 
-For the most part, git should be setup and ready to go from the installer. There will probably be site specific settings (ie your git email for the company you are developing for may be different). If so, just create a ~/.gitconfig.user file
+For the most part, git is ready to go from the installer. Settings for one site, like your work email, credential helpers, and commit signing, go in `~/.gitconfig.user`. Keep it in 1Password and list it in the site's `SITE_FILES` (for example `acme_gitconfig:~/.gitconfig.user`) so the installer creates it; without one, the installer asks for your email and writes a minimal file. For example:
 
 ```bash
 [user]
