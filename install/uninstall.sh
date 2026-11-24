@@ -163,7 +163,7 @@ ssh_key_backed_up() {
 }
 
 backup_checks() {
-  local key repo vault n why
+  local key repo vault n why reasons
 
   bold "2. Backup checks"
 
@@ -216,7 +216,8 @@ backup_checks() {
     [ -n "$(git -C "$repo" status --porcelain 2>/dev/null | head -1)" ] && why+=("uncommitted changes")
     [ -n "$(git -C "$repo" stash list 2>/dev/null | head -1)" ] && why+=("stashes")
     if [ ${#why[@]} -gt 0 ]; then
-      note "  BACKUP   $(short "$repo"): $(IFS=,; echo "${why[*]}" | sed 's/,/, /g')"
+      reasons=$(printf '%s, ' "${why[@]}")
+      note "  BACKUP   $(short "$repo"): ${reasons%, }"
       n=$((n + 1))
     fi
   done < <(find ~/src ~/dotfiles -maxdepth 4 -name .git -type d -prune 2>/dev/null)
