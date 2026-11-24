@@ -262,8 +262,6 @@ oh_my_zsh() {
   else
     logger "Cloning powerlevel10k"
     git clone --depth=1 https://github.com/romkatv/powerlevel10k.git ~/.oh-my-zsh/custom/themes/powerlevel10k
-    logger "Don't worry we will throw away the results of the p10k configure"
-    p10k configure
   fi
 
   if [ -L ~/.p10k.zsh ]; then
@@ -276,7 +274,7 @@ oh_my_zsh() {
 
   set +e
   logger "Ensuring permissions are correct"
-  compaudit | xargs chmod g-w
+  zsh -c 'autoload -Uz compaudit && compaudit' 2>/dev/null | xargs chmod g-w
 
   # Need to explicitly git clone the zsh-completions (plugins no longer work)
   # https://github.com/zsh-users/zsh-completions/issues/603
@@ -364,6 +362,7 @@ install_mac_packages() {
 install_linux_packages(){
   logger "Installing core linux packages..."
   < ~/dotfiles/linux_packages xargs sudo ${pkg_mgr} install -y
+  linux_1password_repo && sudo ${pkg_mgr} install -y 1password-cli
 
   ask "Do you want to install linux desktop packages?"
   linux_desktop_packages=$?
@@ -383,9 +382,28 @@ install_packages() {
     install_mac_packages
   elif [ ${machine} == 'Linux' ] ; then
     install_linux_packages
-    install_mac_packages
   fi
 
+}
+
+# Adds 1Password's apt repository, the source of op and the desktop app on Linux
+linux_1password_repo() {
+  if [ "${pkg_mgr}" != 'apt-get' ]; then
+    logger "Install the 1Password CLI by hand: https://developer.1password.com/docs/cli/get-started/"
+    return 1
+  fi
+  [ -f /etc/apt/sources.list.d/1password.list ] && return 0
+  logger "Adding the 1Password apt repository..."
+  local arch key=https://downloads.1password.com/linux/keys/1password.asc
+  arch=$(dpkg --print-architecture)
+  curl -sS "$key" | sudo gpg --dearmor --yes --output /usr/share/keyrings/1password-archive-keyring.gpg
+  echo "deb [arch=$arch signed-by=/usr/share/keyrings/1password-archive-keyring.gpg] https://downloads.1password.com/linux/debian/$arch stable main" \
+    | sudo tee /etc/apt/sources.list.d/1password.list > /dev/null
+  sudo mkdir -p /etc/debsig/policies/AC2D62742012EA22 /usr/share/debsig/keyrings/AC2D62742012EA22
+  curl -sS https://downloads.1password.com/linux/debian/debsig/1password.pol \
+    | sudo tee /etc/debsig/policies/AC2D62742012EA22/1password.pol > /dev/null
+  curl -sS "$key" | sudo gpg --dearmor --yes --output /usr/share/debsig/keyrings/AC2D62742012EA22/debsig.gpg
+  sudo apt-get update
 }
 
 install_linux_dekstop_packages() {
@@ -424,7 +442,11 @@ add_aliases() {
 }
 
 kubernetes() {
-  ../kubernetes/install.sh
+  if command -v helm > /dev/null; then
+    ~/dotfiles/kubernetes/install.sh
+  else
+    logger "Skipping helm plugins: helm not installed"
+  fi
   # kubectl completion for bash; zsh gets it from the oh-my-zsh kubectl plugin
   local line='command -v kubectl > /dev/null && source <(kubectl completion bash)'
   grep -qxF "$line" ~/.bashrc 2>/dev/null || echo "$line" >> ~/.bashrc
@@ -436,11 +458,13 @@ submodules() {
 }
 
 gitinstall() {
-  if [ ! -d /opt/homebrew/lib/node_modules/git-cz ] ; then
+  if command -v git-cz > /dev/null; then
+    logger "Git commitizen already installed..."
+  elif command -v npm > /dev/null; then
     logger "Setting up git commitizen..."
     npm install -g git-cz --force
   else
-    logger "Git commitizen already installed..."
+    logger "Skipping git commitizen: npm not installed"
   fi
 
   if [ ! -f ~/.gitconfig.user ] ; then
@@ -478,16 +502,8 @@ editors() {
         https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim
 
     logger "Installing all vim plugins..."
-    vim -c "PlugInstall"
-  
-    if [ -f ~/.vim/plugged/YouCompleteMe ] ; then
-      logger "You Complete Me..."
-      cd ~/.vim/plugged/YouCompleteMe
-      py install.py --all
-    else
-      logger "Error! YouCompleteMe doesn't exist, but it should now that Plugins are installed. Try going into vim and running :PlugInstall"
-      exit 1
-    fi
+    # vim-plug runs each plugin's build step, including YouCompleteMe's install.py
+    vim -es -u ~/.vimrc -i NONE +PlugInstall +qall
   fi
 
   if [ -L ~/.config/nvim ]; then
@@ -507,6 +523,10 @@ editors() {
 
 
 colima() {
+  if ! command -v brew > /dev/null; then
+    logger "Skipping Colima: it's installed with Homebrew"
+    return
+  fi
   logger "Setting up Colima config..."
   if [ ! -d ~/.colima/default ]; then
     logger "Creating ~/.colima/default directory..."
@@ -528,6 +548,11 @@ colima() {
     logger "Adding $plugins to cliPluginsExtraDirs in $config"
     jq --arg d "$plugins" '.cliPluginsExtraDirs = ((.cliPluginsExtraDirs // []) + [$d])' "$config" > "$config.tmp" \
       && command mv -f "$config.tmp" "$config"
+  fi
+  # Docker Desktop's credential helper goes away with the app; use Homebrew's keychain helper
+  if [ "$(jq -r '.credsStore // empty' "$config")" = desktop ]; then
+    logger "Switching docker credsStore from desktop to osxkeychain in $config"
+    jq '.credsStore = "osxkeychain"' "$config" > "$config.tmp" && command mv -f "$config.tmp" "$config"
   fi
 }
 

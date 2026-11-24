@@ -1,0 +1,22 @@
+name: Install
+
+on:
+  pull_request:
+    branches: [ "main" ]
+    paths:
+      - "install/**"
+      - "linux_packages"
+      - "linux_desktop_packages"
+      - ".github/workflows/install.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  ubuntu:
+    name: Install on Ubuntu
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Run the installer in a fresh Ubuntu container
+        run: docker run --rm -v "$GITHUB_WORKSPACE":/src:ro ubuntu:24.04 /src/install/test-linux.sh

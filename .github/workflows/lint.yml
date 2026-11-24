@@ -84,6 +84,25 @@ jobs:
             }
           done < /tmp/taps.txt
           exit $fail
+      - name: Flag disabled and deprecated formulae and casks
+        run: |
+          # Homebrew refuses to install disabled entries; deprecated ones are disabled later
+          sed -n 's/^brew "\([^"]*\)".*/\1/p' Brewfile > /tmp/formulae.txt
+          sed -n 's/^cask "\([^"]*\)".*/\1/p' Brewfile > /tmp/casks.txt
+          {
+            xargs brew info --json=v2 --formula < /tmp/formulae.txt | jq -r '.formulae[] | [.name, .disabled, .deprecated, (.disable_reason // .deprecation_reason // "")] | @tsv'
+            xargs brew info --json=v2 --cask < /tmp/casks.txt | jq -r '.casks[] | [.token, .disabled, .deprecated, (.disable_reason // .deprecation_reason // "")] | @tsv'
+          } > /tmp/status.tsv
+          fail=0
+          while IFS=$'\t' read -r name disabled deprecated reason; do
+            if [ "$disabled" = true ]; then
+              echo "::error::$name is disabled by Homebrew ($reason); comment it out in the Brewfile"
+              fail=1
+            elif [ "$deprecated" = true ]; then
+              echo "::warning::$name is deprecated by Homebrew ($reason)"
+            fi
+          done < /tmp/status.tsv
+          exit $fail
       - name: Verify every brew/cask entry resolves to a real formula/cask
         run: |
           # Short-name lookup can miss formulas from a tap added moments ago

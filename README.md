@@ -26,7 +26,7 @@ Run the eval command to get brew in your path
 eval "$(/opt/homebrew/bin/brew shellenv)"
 ```
 
-The installer also installs Brew, but install Ghostty first and run the installer from it, so `p10k configure` runs in the terminal you'll use.
+The installer also installs Brew, but install Ghostty first and run the installer from it, so the prompt and fonts are set up in the terminal you'll use.
 
 ### Install Ghostty
 
@@ -47,7 +47,7 @@ cd dotfiles/install
 ./install.sh
 ```
 
-The install script should ask you to run `p10k configure`.
+The install script links the powerlevel10k config from this repo. To change the prompt, open a new terminal and run `p10k configure`.
 
 Each run is logged to `~/dotfiles-install-<date>.log`. Read it with `less -R`.
 
