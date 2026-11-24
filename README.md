@@ -49,6 +49,8 @@ cd dotfiles/install
 
 The install script should ask you to run `p10k configure`.
 
+Each run is logged to `~/dotfiles-install-<date>.log`. Read it with `less -R`.
+
 ### Moving to a new Mac
 
 Some files hold settings for one machine and stay out of this repo. Before running the install script:
