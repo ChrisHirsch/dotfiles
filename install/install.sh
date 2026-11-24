@@ -429,15 +429,15 @@ ask() {
 
 
 add_aliases() {
-  if ! grep -qs -E '^alias ll=.*$' ${alias_file}; then
+  if ! grep -qs -E '^alias ll=.*$' "${alias_file}"; then
       logger "Adding ll alias..."
-      echo "# List all files colorized in long format" >> ${alias_file}
-      echo 'alias ll="ls -lah"' >> ${alias_file}
+      echo "# List all files colorized in long format" >> "${alias_file}"
+      echo 'alias ll="ls -lah"' >> "${alias_file}"
   fi
 
-  if ! grep -qs -E '^set -o vi$' ${bash_profile_file}; then
+  if ! grep -qs -E '^set -o vi$' "${bash_profile_file}"; then
       logger "Setting VI bindings in bash..."
-      echo 'set -o vi' >> ${bash_profile_file}
+      echo 'set -o vi' >> "${bash_profile_file}"
   fi
 }
 
