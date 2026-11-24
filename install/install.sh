@@ -111,7 +111,7 @@ site_fail() {
 site_op_ready() {
   local session
   [ -n "$SITE_OP_OK" ] && return
-  command -v op > /dev/null || site_fail "1Password CLI (op) not found. Install it with brew bundle."
+  command -v op > /dev/null || site_fail "1Password CLI (op) not found. Install it with: brew install --cask 1password-cli"
   if ! op vault get "$SITE_OP_VAULT" > /dev/null 2>&1; then
     logger "Signing in to 1Password..."
     session=$(op signin) || site_fail "Can't sign in to 1Password. Turn on Settings > Developer > Integrate with 1Password CLI in the app, or add the account with: op account add"
@@ -336,6 +336,10 @@ install_mac_packages() {
     brew_shellenv
   fi
   brew analytics off
+  # The site files and ssh keys come from 1Password, so install it on its own
+  # first; a failure in brew bundle then leaves those steps working
+  logger "Installing 1Password and its CLI..."
+  brew install --cask 1password 1password-cli
   ln -sf ~/dotfiles/Brewfile ~/Brewfile
   logger "Installing brew packages..."
   brew bundle --file ~/Brewfile
