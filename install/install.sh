@@ -429,13 +429,13 @@ ask() {
 
 
 add_aliases() {
-  if ! grep -q -E '^alias ll=.*$' ${alias_file}; then
+  if ! grep -qs -E '^alias ll=.*$' ${alias_file}; then
       logger "Adding ll alias..."
       echo "# List all files colorized in long format" >> ${alias_file}
       echo 'alias ll="ls -lah"' >> ${alias_file}
   fi
 
-  if ! grep -q -E '^set -o vi$' ${bash_profile_file}; then
+  if ! grep -qs -E '^set -o vi$' ${bash_profile_file}; then
       logger "Setting VI bindings in bash..."
       echo 'set -o vi' >> ${bash_profile_file}
   fi
@@ -468,7 +468,7 @@ gitinstall() {
   fi
 
   if [ ! -f ~/.gitconfig.user ] ; then
-    logger "Setting up local git config..."
+    logger "Setting up local git config (to skip this, list a ~/.gitconfig.user document in the site's SITE_FILES)..."
     read -p "Please enter your LOCAL (ie business) email address: " email
     logger "Using $email for ~/.gitconfig.user"
     printf '[user]\n  email = %s\n' "$email" > ~/.gitconfig.user
