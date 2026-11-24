@@ -77,7 +77,6 @@ create_symlinks() {
   ln -sf ~/dotfiles/golang/golangci.yaml ~/.golangci.yaml
   ln -sf ~/dotfiles/postgresql/psqlrc ~/.psqlrc
   ln -sf ~/dotfiles/prettier/.prettierrc ~/.prettierrc
-  ln -sf ~/dotfiles/colima/colima.yaml ~/.colima/default/colima.yaml
   mkdir -p ~/.config/ghostty
   ln -sf ~/dotfiles/ghostty/config ~/.config/ghostty/config
   # lazygit, k9s, and herdr read $XDG_CONFIG_HOME, which zshrc sets to ~/.config
@@ -380,9 +379,6 @@ install_linux_packages(){
 }
 
 install_packages() {
-    source <(kubectl completion bash) # setup autocomplete in bash into the current shell, bash-completion package should be installed first.
-  echo "source <(kubectl completion bash)" >> ~/.bashrc # add autocomplete permanently to your bash shell.
-
   if [ ${machine} == 'Mac' ] ; then
     install_mac_packages
   elif [ ${machine} == 'Linux' ] ; then
@@ -429,6 +425,9 @@ add_aliases() {
 
 kubernetes() {
   ../kubernetes/install.sh
+  # kubectl completion for bash; zsh gets it from the oh-my-zsh kubectl plugin
+  local line='command -v kubectl > /dev/null && source <(kubectl completion bash)'
+  grep -qxF "$line" ~/.bashrc 2>/dev/null || echo "$line" >> ~/.bashrc
 }
 
 submodules() {

@@ -4,7 +4,7 @@
 tap "atlassian/homebrew-acli", trusted: true
 tap "atombender/ktail", trusted: true
 tap "bufbuild/buf", trusted: true
-tap "chef/chef", trusted: true
+# tap "chef/chef", trusted: true
 tap "datadog-labs/pack", trusted: true
 # For dockle
 tap "goodwithtech/r", trusted: true
@@ -241,7 +241,8 @@ cask "beekeeper-studio"
 cask "bruno"
 # Don't let the mac fall asleep (clickable)
 cask "caffeine"
-cask "chef/chef/inspec"
+# Off: its download from the chef tap fails
+# cask "chef/chef/inspec"
 # Ebook Organizer
 cask "calibre"
 # Amazon Java JDK https://docs.aws.amazon.com/corretto/latest/corretto-11-ug/what-is-corretto-11.html
