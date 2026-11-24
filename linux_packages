@@ -11,3 +11,11 @@ bash-completion
 curl
 stress
 yamllint
+zsh
+jq
+fzf
+unzip
+wget
+cmake
+build-essential
+python3-dev

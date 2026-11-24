@@ -205,7 +205,8 @@ brew "sqlite"
 brew "sshuttle"
 # Great tool to simulate loads 
 brew "stress"
-brew "termshark"
+# Off: Homebrew disabled it as unmaintained
+# brew "termshark"
 brew "tfenv"
 brew "the_silver_searcher"
 brew "tmux"
@@ -320,7 +321,8 @@ cask "pulse-sms"
 # Replaced spectacle
 cask "rectangle"
 # Quickly prototype react apps
-cask "react-proto"
+# Off: Homebrew disabled it for failing the macOS Gatekeeper check
+# cask "react-proto"
 # Secure Chat
 cask "signal"
 cask "slack"
@@ -344,7 +346,8 @@ cask "xscreensaver"
 # Comic CBZ reader
 cask "yacreader"
 # OWASP Web App Scanner - Zed Attack Proxy
-cask "zap"
+# Off: Homebrew disabled it for failing the macOS Gatekeeper check; get it from zaproxy.org
+# cask "zap"
 
 # Need to write a commercial/closed source/optional Brewfile?
 # Great Design tool
