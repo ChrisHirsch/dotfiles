@@ -2,6 +2,22 @@
 
 #set -e
 
+# Record the whole run in a log file. script(1) keeps a real terminal, so
+# brew's progress and the prompts still work.
+if [ -z "$DOTFILES_INSTALL_LOG" ] && [ -t 0 ] && command -v script > /dev/null; then
+  DOTFILES_INSTALL_LOG=~/dotfiles-install-$(date +%Y%m%d-%H%M%S).log
+  export DOTFILES_INSTALL_LOG
+  # Readable only by you, since it holds everything shown on screen
+  (umask 077 && : > "$DOTFILES_INSTALL_LOG")
+  echo "Logging this run to $DOTFILES_INSTALL_LOG (view with: less -R)"
+  if [ "$(uname -s)" = Darwin ]; then
+    script -q "$DOTFILES_INSTALL_LOG" "$0" "$@"
+  else
+    script -q -e -c "$(printf '%q ' "$0" "$@")" "$DOTFILES_INSTALL_LOG"
+  fi
+  exit $?
+fi
+
 # Set OS specific variables
 set_os_vars() {
   unameOut="$(uname -s)"
@@ -342,7 +358,8 @@ install_mac_packages() {
   brew install --cask 1password 1password-cli
   ln -sf ~/dotfiles/Brewfile ~/Brewfile
   logger "Installing brew packages..."
-  brew bundle --file ~/Brewfile
+  # Without --verbose, bundle hides brew install's output (and any prompt) until it finishes
+  brew bundle --verbose --file ~/Brewfile
 }
 
 install_linux_packages(){
