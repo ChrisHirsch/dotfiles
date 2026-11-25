@@ -297,8 +297,6 @@ oh_my_zsh() {
   logger "Run p10k configure to re-configure powerlevel"
 
   set +e
-  logger "Ensuring permissions are correct"
-  zsh -c 'autoload -Uz compaudit && compaudit' 2>/dev/null | xargs chmod g-w
 
   # Need to explicitly git clone the zsh-completions (plugins no longer work)
   # https://github.com/zsh-users/zsh-completions/issues/603
@@ -320,6 +318,33 @@ oh_my_zsh() {
   else
     logger "Cloning zsh-autosuggestions plugin..."
     git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+  fi
+
+  fix_compaudit
+}
+
+# compinit refuses to load completions from a directory anyone but you or root
+# can write to, and asks about it on every new shell. Takes the group and world
+# write bits off the directories compaudit names.
+fix_compaudit() {
+  local insecure
+  # An interactive shell, so fpath holds the oh-my-zsh and brew completion
+  # directories; a bare zsh reads no zshrc and sees almost none of them
+  insecure=$(zsh -i -c 'autoload -Uz compaudit && compaudit' 2> /dev/null)
+  if [ -z "$insecure" ]; then
+    logger "Completion directory permissions are correct"
+    return
+  fi
+  logger "Taking group and world write off the completion directories compinit rejects:"
+  echo "  ${insecure//$'\n'/$'\n'  }"
+  printf '%s\n' "$insecure" | tr '\n' '\0' | xargs -0 chmod go-w
+
+  # Whatever is left is owned by someone else, which chmod can't fix
+  insecure=$(zsh -i -c 'autoload -Uz compaudit && compaudit' 2> /dev/null)
+  if [ -n "$insecure" ]; then
+    logger "Still rejected, and owned by neither you nor root. Change the owner or drop them from fpath:"
+    echo "  ${insecure//$'\n'/$'\n'  }"
+    logger "  sudo chown -R $(id -un) <directory>"
   fi
 }
 
