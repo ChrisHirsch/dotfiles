@@ -167,6 +167,27 @@ This will override any more general config in ~/.gitconfig
 
 The ticket settings live in `~/.site` (see [Site settings](#site-settings-site)). Without `PR_TICKET_PATTERN`, PRs go to the `housekeeping` ticket unless you pass `--ticket`.
 
+### Managed Macs
+
+`bin/mdm-report` prints what the management and security agents on a Mac are doing and what they cost. It is read-only: it runs status and listing commands, reads the managed preference files, and prints what it finds. It changes no setting, writes no file, and sends nothing anywhere.
+
+```bash
+mdm-report            # everything
+mdm-report --cost     # just the CPU and memory table
+mdm-report --scan     # just what a scanner covers, and the paths it does not skip
+sudo -v && mdm-report # include the configuration profiles, which need admin rights
+```
+
+It covers five things:
+
+* **Management** — DEP and MDM enrollment, the configuration profiles installed, and which apps the MDM configures.
+* **System extensions and filters** — an endpoint security extension is called on every process start and file open; a socket filter on every connection. This is where an agent's cost comes from.
+* **Cost** — CPU minutes burned per hour of uptime, totalled per vendor, with memory and process counts. 60 CPU-min/hr is one core busy the whole time. Agents the MDM installed are listed separately from the ones built into macOS, so the two can be compared.
+* **What a scanner covers** — for Microsoft Defender, its real-time protection and DLP status and the exclusions the MDM has set. Then, for any vendor, the build caches, dependency trees, and VM disk images on the Mac, largest first: the paths to ask to have excluded, since scanning them is the usual cause of slow builds.
+* **Right now** — the top processes by current CPU, for context.
+
+Add a vendor by editing `AGENT_PATTERNS` at the top of the script. Each line is `<tier>|<vendor>|<fragment>`, where the fragment is matched case-insensitively against the program's file name.
+
 ### Claude Code
 
 The `claude_config` step of the install script sets up `~/.claude`:
