@@ -1,0 +1,404 @@
+#!/usr/bin/env bash
+# mdm-report — what the management and security agents on this Mac are doing, and what they cost.
+#
+# Read-only: it runs status and listing commands, reads managed preference files, and prints what it
+# finds. It changes no setting, writes no file, and sends nothing anywhere. Safe to run on a managed
+# Mac, though the agents themselves record that you ran it, like any other command.
+#
+# Use it to see which agents are installed, how much CPU time each has burned per hour the machine
+# has been up, which file-system filters are loaded, and what a scanner has been told to scan or
+# skip. The per-agent CPU-minutes-per-hour figure is the one worth quoting: it is the share of the
+# machine an agent takes whether or not you are using it.
+#
+#   mdm-report            everything
+#   mdm-report --cost     just the CPU and memory table
+#   mdm-report --scan     just what a scanner covers, and the developer paths it does not skip
+#
+# Some facts need admin rights (the installed configuration profiles, kernel-level filter counts).
+# Without sudo those sections say so instead of failing. With sudo they are included:
+#
+#   sudo -v && mdm-report
+
+set -uo pipefail
+
+MODE=all
+case "${1:-}" in
+  --cost) MODE=cost ;;
+  --scan) MODE=scan ;;
+  -h | --help)
+    sed -n '2,/^$/p' "$0" | sed 's/^# \{0,1\}//'
+    exit 0
+    ;;
+  "") ;;
+  *)
+    echo "Unknown option: $1 (try --help)" >&2
+    exit 1
+    ;;
+esac
+
+if [ "$(uname -s)" != Darwin ]; then
+  echo "This script is for macOS."
+  exit 1
+fi
+
+# Each line is <tier>|<vendor>|<fragment>, matched case-insensitively against the
+# program's file name (not its whole path, which produces false matches: Apple's
+# CascadeSets.framework otherwise looks like ESET).
+#   agent = installed by management, the ones worth costing
+#   apple = built into macOS, listed for comparison
+AGENT_PATTERNS=$(
+  cat <<'EOF'
+agent|Microsoft Defender|wdavdaemon
+agent|Microsoft Defender|Microsoft Defender
+agent|Microsoft Defender|epsext
+agent|Microsoft Defender|netext
+agent|Microsoft Defender DLP|dlp_agent
+agent|Microsoft Defender DLP|dlpdaemon
+agent|Microsoft Intune|IntuneMdm
+agent|Microsoft Intune|Microsoft Intune
+agent|Microsoft AutoUpdate|msupdate
+agent|Microsoft AutoUpdate|Microsoft AutoUpdate
+agent|Microsoft OneDrive sync|OneDrive
+agent|Jamf|jamf
+agent|Kandji|kandji
+agent|Mosyle|mosyle
+agent|Addigy|addigy
+agent|CrowdStrike Falcon|falcon
+agent|CrowdStrike Falcon|CSFalcon
+agent|SentinelOne|Sentinel
+agent|Carbon Black|CbOsx
+agent|Carbon Black|cbdaemon
+agent|Cisco Secure Endpoint|ambit
+agent|Cisco Secure Endpoint|ciscoamp
+agent|Cisco Umbrella|Umbrella
+agent|Netskope|nsAuxiliarySvc
+agent|Netskope|stAgentSvc
+agent|Zscaler|Zscaler
+agent|Palo Alto GlobalProtect|GlobalProtect
+agent|Forcepoint|Forcepoint
+agent|Digital Guardian|DigitalGuardian
+agent|Code42|code42
+agent|Code42|CrashPlan
+agent|Trellix or McAfee|Trellix
+agent|Trellix or McAfee|McAfee
+agent|Sophos|Sophos
+agent|Trend Micro|TrendMicro
+agent|ESET|esets_
+agent|Qualys|Qualys
+agent|Rapid7|ir_agent
+agent|Tanium|Tanium
+agent|Nessus|nessus
+agent|Absolute|rpcnet
+agent|BeyondTrust|BeyondTrust
+agent|Remote support (SimpleHelp)|SimpleHelp
+agent|Remote support (TeamViewer)|TeamViewer
+agent|Remote support (ConnectWise)|ScreenConnect
+agent|Remote support (ConnectWise)|ConnectWise
+agent|Remote support (Splashtop)|Splashtop
+agent|Remote support (AnyDesk)|AnyDesk
+agent|Remote support (LogMeIn)|LogMeIn
+agent|RMM (NinjaOne)|ninjarmm
+agent|RMM (Datto)|CagService
+agent|RMM (Kaseya)|kaseya
+agent|RMM (N-able)|nagent
+apple|Apple XProtect|XProtect
+apple|Apple XProtect|xprotect
+apple|Apple endpoint security|endpointsecurityd
+apple|Apple code signing checks|syspolicyd
+apple|Apple MDM client|mdmclient
+apple|Spotlight indexing|mds_stores
+apple|Spotlight indexing|mdworker
+EOF
+)
+
+bold() { printf '\n\033[1m%s\033[0m\n' "$*"; }
+note() { printf '  %s\n' "$*"; }
+have() { command -v "$1" > /dev/null 2>&1; }
+# sudo without a prompt: true only when a timestamp is already valid
+sudo_ready() { sudo -n true 2>/dev/null; }
+
+# Seconds the machine has been up, for the per-hour figures
+uptime_seconds() {
+  local boot now
+  boot=$(sysctl -n kern.boottime 2>/dev/null | sed -n 's/^{ *sec = \([0-9][0-9]*\).*/\1/p')
+  now=$(date +%s)
+  if [ -n "$boot" ] && [ "$boot" -gt 0 ] 2>/dev/null; then
+    echo $((now - boot))
+  else
+    echo 0
+  fi
+}
+
+# --- Management ------------------------------------------------------------
+
+section_management() {
+  bold "Management"
+
+  local enrolled f
+  if have profiles; then
+    enrolled=$(profiles status -type enrollment 2>/dev/null)
+    [ -n "$enrolled" ] && sed 's/^/  /' <<< "$enrolled"
+  fi
+
+  if have mdmclient; then
+    note ""
+    note "MDM server and whether enrollment is user-approved:"
+    sudo_ready && sudo mdmclient QueryInstalledProfiles 2>/dev/null | grep -i -E 'ServerURL|IsUserApproved' | head -4 | sed 's/^/    /'
+  fi
+
+  note ""
+  if sudo_ready; then
+    note "Configuration profiles installed:"
+    sudo profiles show -type configuration 2>/dev/null \
+      | grep -E 'PayloadDisplayName|PayloadType' \
+      | sed 's/^ *//' | sort -u | sed 's/^/    /' | head -60
+  else
+    note "Configuration profiles: run with sudo to list them"
+    note "  sudo profiles show -type configuration"
+  fi
+
+  note ""
+  note "Managed preference files (what the MDM has configured, and for which app):"
+  local f
+  local found=0
+  for f in /Library/Managed\ Preferences/*.plist /Library/Managed\ Preferences/*/*.plist; do
+    [ -f "$f" ] || continue
+    note "    $(basename "$f" .plist)  ($(stat -f '%z bytes, set %Sm' -t '%Y-%m-%d' "$f"))"
+    found=1
+  done
+  [ "$found" -eq 0 ] && note "    none: nothing on this Mac is configured by an MDM"
+}
+
+# --- System extensions and filters ----------------------------------------
+# These are where a security agent actually costs you: an endpoint security
+# extension sees every process start and file open, and a socket filter sees
+# every connection.
+
+section_extensions() {
+  bold "System extensions and file-system filters"
+  note "An endpoint security extension is called on every process start and file open."
+  note "A socket or network filter is called on every connection."
+  note ""
+
+  if have systemextensionsctl; then
+    systemextensionsctl list 2>/dev/null \
+      | grep -v '^---' | grep -E 'activated|\*' | grep -v '^enabled' \
+      | sed 's/^/    /' | head -30
+    note "    (columns: enabled active teamID bundleID name [state])"
+  fi
+
+  note ""
+  if sudo_ready; then
+    note "Kernel authorization and file-event clients:"
+    sudo launchctl list 2>/dev/null | grep -i -E 'endpointsecurity|systemextension' | sed 's/^/    /' | head -10
+  fi
+
+  note ""
+  note "Third-party network filters (a proxy here sees your traffic):"
+  scutil --nc list 2>/dev/null | sed 's/^/    /' | head -10
+  [ -f /Library/Managed\ Preferences/com.apple.webcontent-filter.plist ] \
+    && note "    a web content filter profile is installed"
+}
+
+# --- Cost ------------------------------------------------------------------
+
+section_cost() {
+  bold "What the agents cost"
+
+  local up_s up_h
+  up_s=$(uptime_seconds)
+  up_h=$(awk -v s="$up_s" 'BEGIN { printf "%.4f", s / 3600 }')
+  note "Up $(awk -v h="$up_h" 'BEGIN { printf "%.1f", h }') hours. Load average:$(sysctl -n vm.loadavg 2>/dev/null | tr -d '{}')"
+  note ""
+  note "CPU-min/hr is CPU minutes burned per hour of uptime, summed over each vendor's"
+  note "processes: 60 means one core busy the whole time. It counts work done whether or"
+  note "not you were using the machine, so it is the figure to quote for lost time."
+  note ""
+
+  # One ps snapshot and one awk pass, totalled per vendor. A shell loop per
+  # process would spawn thousands of subshells.
+  ps -axo pid,%cpu,rss,time,comm 2>/dev/null | tail -n +2 \
+    | AGENT_PATTERNS="$AGENT_PATTERNS" awk -v up_h="$up_h" '
+      # ps TIME is [[dd-]hh:]mm:ss[.ss]
+      function secs(t,   p, k, d, n) {
+        d = 0
+        if ((k = index(t, "-")) > 0) { d = substr(t, 1, k - 1) + 0; t = substr(t, k + 1) }
+        n = split(t, p, ":")
+        if (n == 3) return d * 86400 + p[1] * 3600 + p[2] * 60 + p[3]
+        if (n == 2) return d * 86400 + p[1] * 60 + p[2]
+        return 0
+      }
+      function base(path,   p, n) { n = split(path, p, "/"); return p[n] }
+      BEGIN {
+        np = split(ENVIRON["AGENT_PATTERNS"], lines, "\n")
+        for (i = 1; i <= np; i++) {
+          if (split(lines[i], f, "|") != 3) continue
+          tier[i] = f[1]; vendor[i] = f[2]; pat[i] = tolower(f[3])
+        }
+      }
+      {
+        comm = $5
+        for (j = 6; j <= NF; j++) comm = comm " " $j
+        name = tolower(base(comm))
+        hit = 0
+        for (i = 1; i <= np; i++)
+          if (pat[i] != "" && index(name, pat[i])) { hit = i; break }
+        if (!hit) next
+        v = vendor[hit]
+        cpu[v] += (up_h > 0 ? (secs($4) / 60) / up_h : 0)
+        mem[v] += $3 / 1024
+        now[v] += $2
+        n[v]++
+        who[v] = tier[hit]
+      }
+      END {
+        for (v in cpu)
+          printf "%s\t%.2f\t%s\t%.1f\t%.1f\t%d\n", who[v], cpu[v], v, mem[v], now[v], n[v]
+      }' \
+    | sort -t"$(printf '\t')" -k1,1 -k2,2rn \
+    | awk -F'\t' '
+      function head(title) {
+        printf "  %s\n", title
+        printf "  %-28s %10s %9s %8s %6s\n", "VENDOR", "CPU-min/hr", "MEM-MB", "CPU-NOW", "PROCS"
+      }
+      $1 == "agent" {
+        if (!a++) head("Installed by management")
+        agent_total += $2
+        printf "  %-28s %10.2f %9.1f %7.1f%% %6d\n", $3, $2, $4, $5, $6
+        next
+      }
+      {
+        if (!b++) { if (a) printf "\n"; head("Built into macOS, for comparison") }
+        apple_total += $2
+        printf "  %-28s %10.2f %9.1f %7.1f%% %6d\n", $3, $2, $4, $5, $6
+      }
+      END {
+        if (!a && !b) { print "  (no management or security agents are running)"; exit }
+        printf "\n"
+        if (a) printf "  %-28s %10.2f CPU-min/hr = %.1f%% of one core\n", "TOTAL installed by management", agent_total, agent_total / 60 * 100
+        if (b) printf "  %-28s %10.2f CPU-min/hr\n", "TOTAL built into macOS", apple_total
+      }'
+
+  note ""
+  note "For a fuller picture of where the time goes (needs admin rights, runs 60s):"
+  note "  sudo powermetrics --samplers tasks --show-process-energy -n 1 -i 60000 | head -40"
+}
+
+# --- What a scanner covers -------------------------------------------------
+
+section_scan() {
+  bold "What the scanner covers"
+
+  local wdav=/Library/Managed\ Preferences/com.microsoft.wdav.plist
+  if [ ! -f "$wdav" ] && ! have mdatp; then
+    note "Microsoft Defender is not installed here. Another vendor's exclusions are set in"
+    note "its own console, not on this Mac, so ask whoever runs it for the current list."
+    note ""
+  fi
+
+  if have mdatp; then
+    note "Defender's own status:"
+    local field
+    for field in real_time_protection_enabled passive_mode_enabled \
+      real_time_protection_subsystem tamper_protection full_disk_access_enabled \
+      cloud_enabled automatic_sample_submission_enabled definitions_status; do
+      local v
+      v=$(mdatp health --field "$field" 2>/dev/null | tr -d '"')
+      [ -n "$v" ] && printf '    %-40s %s\n' "$field" "$v"
+    done
+    note ""
+    note "Behaviour monitoring and DLP:"
+    mdatp health 2>/dev/null | grep -i -E 'behavior_monitoring|data_loss_prevention|device_control|network_protection' | sed 's/^/    /'
+  fi
+
+  if [ -f "$wdav" ]; then
+    note ""
+    note "Exclusions the MDM has set (paths, extensions, and processes it skips):"
+    local excl
+    excl=$(plutil -extract exclusions xml1 -o - "$wdav" 2>/dev/null | grep -E '<string>' | sed 's/.*<string>\(.*\)<\/string>.*/\1/')
+    if [ -n "$excl" ]; then
+      sed 's/^/    /' <<< "$excl"
+    else
+      note "    none"
+      note "    Nothing is skipped, so every build artifact and VM disk is scanned."
+    fi
+
+    note ""
+    note "Scan settings that drive how much work it does:"
+    local k
+    for k in scanArchives scanHistory enableRealTimeProtection passiveMode \
+      threatTypeSettings allowedThreats nonExecMountPolicy unmonitoredFilesystems; do
+      local v
+      v=$(plutil -extract "antivirusEngine.$k" raw -o - "$wdav" 2>/dev/null \
+        || plutil -extract "$k" raw -o - "$wdav" 2>/dev/null)
+      [ -n "$v" ] && printf '    %-30s %s\n' "$k" "$v"
+    done
+  fi
+
+  # The paths that cost a developer the most: thousands of small files, or
+  # multi-gigabyte disk images a scanner opens again on every write. Printed
+  # whether or not a scanner was found, since this is the list to hand over.
+  note ""
+  note "Paths on this Mac worth asking to have excluded, largest first:"
+  # A literal ~ has to come from a variable: in a script bash expands one written
+  # in the replacement text, so ${p/#$HOME/~} would substitute $HOME for itself.
+  local p found=0 tilde='~'
+  for p in ~/.colima ~/.docker ~/.lima ~/Library/Containers/com.docker.docker \
+    ~/.rancher-desktop ~/VirtualBox\ VMs ~/.vagrant.d \
+    ~/src ~/go/pkg/mod ~/.cargo ~/.gradle ~/.m2 ~/.npm ~/.pnpm-store \
+    ~/Library/Caches ~/Library/Developer/Xcode/DerivedData ~/.cache; do
+    [ -e "$p" ] || continue
+    found=1
+    # -k so the sizes sort; -x stays on this volume
+    du -skx "$p" 2>/dev/null | sed "s|$HOME|$tilde|"
+  done | sort -rn | awk '
+    { kb = $1
+      path = $2
+      for (j = 3; j <= NF; j++) path = path " " $j
+      unit = "K"
+      if (kb >= 1048576) { kb /= 1048576; unit = "G" }
+      else if (kb >= 1024) { kb /= 1024; unit = "M" }
+      printf "    %6.1f%s  %s\n", kb, unit, path }'
+  if [ "$found" -eq 1 ]; then
+    note ""
+    note "Each is a build cache, dependency tree, or VM disk: many files, rewritten constantly,"
+    note "and of no use to a malware scanner. Scanning them is the usual cause of slow builds."
+    note "A scanner that watches a VM disk image re-reads gigabytes on every container write."
+  fi
+
+  if have mdatp; then
+    note ""
+    note "To measure which files and processes the scanner spends its time on, Defender can keep"
+    note "statistics. Turning them on is a change, so it is not done here:"
+    note "  mdatp config real_time_protection_statistics_enabled --value enabled   # change"
+    note "  mdatp diagnostic real_time_protection_statistics --sort --top 20       # read"
+    note "  mdatp config real_time_protection_statistics_enabled --value disabled  # change back"
+  fi
+}
+
+# --- Right now -------------------------------------------------------------
+
+section_live() {
+  bold "Right now"
+  note "Top processes by current CPU (whole machine, for context):"
+  ps -axo %cpu,rss,comm 2>/dev/null | sort -rn | head -8 \
+    | awk '{ comm = $3
+             for (j = 4; j <= NF; j++) comm = comm " " $j
+             n = split(comm, p, "/")
+             printf "    %5.1f%%  %7.1f MB  %s\n", $1, $2 / 1024, p[n] }'
+  note ""
+  note "To watch an agent as it works, for example while a build runs:"
+  note "  log stream --predicate 'process CONTAINS[c] \"wdav\" OR process CONTAINS[c] \"dlp\"' --level info"
+}
+
+case "$MODE" in
+  cost) section_cost ;;
+  scan) section_scan ;;
+  all)
+    section_management
+    section_extensions
+    section_cost
+    section_scan
+    section_live
+    ;;
+esac
