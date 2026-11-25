@@ -33,8 +33,12 @@ fi
 
 bold() { printf '\n\033[1m%s\033[0m\n' "$*"; }
 note() { printf '  %s\n' "$*"; }
-# Paths print with ~ in place of $HOME
-short() { printf '%s' "${1/#$HOME/~}"; }
+# Paths print with ~ in place of $HOME. The ~ is a variable because bash 5
+# tilde-expands a literal one in the replacement, which puts $HOME back.
+short() {
+  local tilde='~'
+  printf '%s' "${1/#$HOME/$tilde}"
+}
 
 # Asks before something destructive; the default is no
 confirm() {
